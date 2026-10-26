@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI 生成率检测报告 · mixed_hc3.txt</title>
+<style>
+:root{
+  --ink:#1a1a1a; --ink-2:#4a4a4a; --ink-3:#767676; --line:#e3e0d8;
+  --paper:#fbfaf6; --card:#ffffff; --accent:#7c4dff; --accent-2:#0f766e;
+  --hi:#b42318; --hi-bg:#fee4e2; --mhi:#b54708; --mhi-bg:#fef0c7;
+  --mid:#846200; --mid-bg:#fdf6d8; --low:#027a48; --low-bg:#dcfae6;
+  --shadow:0 1px 2px rgba(20,18,12,.06),0 8px 24px rgba(20,18,12,.06);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font:15px/1.7 "Source Han Sans SC","Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 20px 80px}
+a{color:var(--accent)}
+h1,h2,h3{font-family:"Source Han Serif SC","Noto Serif SC","Songti SC",Georgia,serif;
+  line-height:1.25;margin:0}
+header.top{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:26px}
+.eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3)}
+h1{font-size:30px;margin:8px 0 6px;letter-spacing:-.01em}
+.meta{color:var(--ink-3);font-size:13px;display:flex;flex-wrap:wrap;gap:6px 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:22px 24px;box-shadow:var(--shadow);margin:0 0 20px}
+.verdict{display:grid;grid-template-columns:minmax(240px,1.1fr) 2fr;gap:26px;align-items:center}
+@media(max-width:760px){.verdict{grid-template-columns:1fr}}
+.big{font-size:56px;font-weight:700;line-height:1;letter-spacing:-.02em}
+.big small{font-size:22px;font-weight:600;margin-left:2px}
+.pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;
+  padding:5px 12px;font-size:13px;font-weight:600;border:1px solid transparent}
+.pill.high{background:var(--hi-bg);color:var(--hi);border-color:#f9c6c0}
+.pill.mid_high{background:var(--mhi-bg);color:var(--mhi);border-color:#f7d9a0}
+.pill.mid{background:var(--mid-bg);color:var(--mid);border-color:#ecdfa6}
+.pill.low{background:var(--low-bg);color:var(--low);border-color:#a9e8c4}
+.pill.neutral{background:#f1f0ea;color:var(--ink-2);border-color:var(--line)}
+.sub{color:var(--ink-3);font-size:13px;margin-top:10px}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;margin-top:4px}
+.kv div{background:#faf9f4;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kv b{display:block;font-size:19px;font-variant-numeric:tabular-nums}
+.kv span{font-size:12px;color:var(--ink-3)}
+.bar{height:12px;border-radius:999px;background:#eeebe1;overflow:hidden;margin:14px 0 6px;position:relative}
+.bar>i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#0f766e,#b54708,#b42318)}
+.ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3)}
+h2{font-size:20px;margin:0 0 6px}
+h2 .n{color:var(--ink-3);font-weight:400;font-size:14px;margin-right:8px;font-family:inherit}
+.sec-lead{color:var(--ink-2);font-size:14px;margin:0 0 16px}
+.warn{background:#fff8e6;border:1px solid #f2d59b;border-left:4px solid #d99a1b;
+  border-radius:10px;padding:12px 16px;margin:0 0 10px;font-size:14px;color:#5c4410}
+.warn b{color:#7a4b00}
+.ok{background:#effaf3;border:1px solid #b7e4c7;border-left:4px solid #2f9e63;
+  border-radius:10px;padding:12px 16px;font-size:14px;color:#14532d}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;letter-spacing:.04em;color:var(--ink-3);font-weight:600;text-transform:uppercase}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tbody tr:hover{background:#fcfbf7}
+.g{display:inline-block;min-width:44px;text-align:center;border-radius:6px;padding:1px 6px;
+  font-size:12px;font-weight:600}
+.g.high{background:var(--hi-bg);color:var(--hi)}
+.g.mid_high{background:var(--mhi-bg);color:var(--mhi)}
+.g.mid{background:var(--mid-bg);color:var(--mid)}
+.g.low{background:var(--low-bg);color:var(--low)}
+.g.excluded{background:#f1f0ea;color:var(--ink-3)}
+td.pcell{position:relative}
+td.pcell::before{content:"";position:absolute;inset:0;opacity:.55;
+  background:linear-gradient(90deg,var(--heat) var(--w),transparent var(--w))}
+td.pcell span{position:relative}
+.ptext{color:var(--ink-2);font-size:13px}
+details summary{cursor:pointer;color:var(--accent);font-size:12.5px;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details[open] summary{margin-bottom:6px}
+details .full{white-space:pre-wrap;background:#faf9f4;border:1px solid var(--line);
+  border-radius:8px;padding:10px;font-size:13px;color:var(--ink-2)}
+.sig{color:var(--ink-3);font-size:12px;margin-top:4px}
+.sig li{margin:1px 0}
+.chart{width:100%;height:120px;display:block}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--ink-3);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+ul.plain{margin:6px 0 0;padding-left:18px;color:var(--ink-2);font-size:13.5px}
+ul.plain li{margin:4px 0}
+code{background:#f1f0ea;border-radius:4px;padding:1px 5px;font-size:12.5px}
+footer{color:var(--ink-3);font-size:12.5px;border-top:1px solid var(--line);padding-top:16px;margin-top:36px}
+.grade-chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-2)}
+@media print{
+  body{background:#fff}
+  .wrap{max-width:none;padding:0}
+  .card{box-shadow:none;border-color:#ddd;break-inside:avoid}
+  details{display:none}
+  .noprint{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="eyebrow">ai-detect · 本地离线检测</div>
+  <h1>AI 生成率检测报告</h1>
+  <div class="meta">
+    <span>文档：<b>mixed_hc3.txt</b></span>
+    <span>正文 2319 字 / 8 段</span>
+    <span>模式：strict（阈值 0.062）</span>
+    <span>生成于 2026-10-26 13:31:17</span>
+    <span>耗时 14.6s</span>
+  </div>
+</header>
+
+<section class="card">
+  <div class="verdict">
+    <div>
+      <div class="pill high">结论：AI 特征强，风险高</div>
+      <div class="big" style="margin-top:14px">54.2<small>%</small></div>
+      <div class="sub">AI 生成占比（字数口径，置信区间 15.6% – 89.0%（95%，bootstrap））</div>
+    </div>
+    <div>
+      <div class="bar"><i style="width:54.2%"></i></div>
+      <div class="ticks"><span>0%</span><span>判定阈值 6%</span><span>100%</span></div>
+      <div class="kv" style="margin-top:18px">
+        <div><b>50%</b><span>AI 段落占比（4/8 段）</span></div>
+        <div><b>4</b><span>极高风险段</span></div>
+        <div><b>0</b><span>偏高风险段</span></div>
+        <div><b>0</b><span>已剔除字数（参考文献等）</span></div>
+      </div>
+      <div class="sub" style="margin-top:14px">AI 生成占比显著高于阈值，多段落被判为 AI 生成，建议整体重写后再交付。</div>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>先说风险：这些结论不能怎么用</h2>
+  <p class="sec-lead">机器检测没有「学术不端判决」效力。本报告给的是特征证据与区间，请按证据用。</p>
+  <div class='warn'>判定阈值是在 HC3 的财经/法律/医学三种人类文本上标定的。若待检文本文体不同（如问答、百科、口语化写作），人类文本被误判的比例会升高（域外实测误报率高于目标值）。重要场合请用 --mode strict 复核，并以逐段结果和可疑句为准，不要只看整篇百分比。</div><div class='warn'>段落间判定分歧较大（标准差 0.50），可能存在混合创作（人工 + AI）或风格差异，建议看逐段结果而不是只看整篇百分比。</div>
+  <ul class="plain">
+    <li><b>不要只看整篇百分比。</b>真正的信息在逐段表：哪几段触发了什么特征。</li>
+    <li><b>人类写作也会被误判</b>（术语密集、句式工整、模板化公文腔，都会让分数升高）。</li>
+    <li><b>最新模型更难检出。</b>检测器对旧模型更敏感；「没测出来」不等于「不是 AI 写的」。</li>
+    <li>本工具全部本地运行，文本不出本机；除首次下载模型外不联网。</li>
+  </ul>
+</section>
+
+<section class="card">
+  <h2><span class="n">01</span>段落分布</h2>
+  <p class="sec-lead">每根柱子是一个段落（或合并段）的 P(AI)；虚线是当前模式的判定阈值。</p>
+  <svg class="chart" viewBox="0 0 1000 120" preserveAspectRatio="none" role="img" aria-label="段落 AI 概率分布"><line x1="0" y1="90" x2="1000" y2="90" stroke="#d8d4c8" stroke-width="1"/><line x1="0" y1="85.2" x2="1000" y2="85.2" stroke="#b42318" stroke-width="1" stroke-dasharray="4 4" opacity=".7"/><rect x="0.0" y="12.0" width="123.7" height="78.0" rx="2.0" fill="#f6bdb6"><title>第 1 段 P(AI)=1.00</title></rect><rect x="125.2" y="88.5" width="123.7" height="1.5" rx="2.0" fill="#bfe8d0"><title>第 2 段 P(AI)=0.00</title></rect><rect x="250.4" y="12.0" width="123.7" height="78.0" rx="2.0" fill="#f6bdb6"><title>第 3 段 P(AI)=1.00</title></rect><rect x="375.6" y="88.5" width="123.7" height="1.5" rx="2.0" fill="#bfe8d0"><title>第 4 段 P(AI)=0.01</title></rect><rect x="500.8" y="12.0" width="123.7" height="78.0" rx="2.0" fill="#f6bdb6"><title>第 5 段 P(AI)=1.00</title></rect><rect x="625.9" y="88.5" width="123.7" height="1.5" rx="2.0" fill="#bfe8d0"><title>第 6 段 P(AI)=0.00</title></rect><rect x="751.1" y="12.0" width="123.7" height="78.0" rx="2.0" fill="#f6bdb6"><title>第 7 段 P(AI)=1.00</title></rect><rect x="876.3" y="88.5" width="123.7" height="1.5" rx="2.0" fill="#bfe8d0"><title>第 8 段 P(AI)=0.00</title></rect></svg>
+  <div class="legend">
+    <span><i style="background:#f6bdb6"></i>极高（≥0.25）</span>
+    <span><i style="background:#fbd9a2"></i>偏高（≥0.06）</span>
+    <span><i style="background:#f4e7ad"></i>中等（≥0.03）</span>
+    <span><i style="background:#bfe8d0"></i>低</span>
+  </div>
+</section>
+
+<section class="card">
+  <h2><span class="n">02</span>可疑句（句级细化）</h2>
+  <p class="sec-lead">只对已判为 AI 的段落做句级打分，最多列 20 条；这些是最值得优先改写的位置。</p>
+  <table>
+    <thead><tr><th class="num">段</th><th class="num">P(AI)</th><th>句子</th></tr></thead>
+    <tbody><tr><td class='num'>7</td><td class='num'>1.00</td><td class='ptext'>患者家属可以帮助患者营造良好的生活环境，给予必要的帮助和支持，帮助患者保持积极的心态，促进康复进程。</td></tr><tr><td class='num'>7</td><td class='num'>1.00</td><td class='ptext'>但是，中风患者的康复通常是一个长期的过程，具体的康复方案需要根据患者的具体情况来制定。</td></tr><tr><td class='num'>5</td><td class='num'>1.00</td><td class='ptext'>因此，在还款期数越多的情况下，每期所需偿还的利息越少，而本金越多。</td></tr><tr><td class='num'>1</td><td class='num'>1.00</td><td class='ptext'>菜鸟驿站通常会与加盟店主签订一份合同，具体细节可能会有所不同。</td></tr><tr><td class='num'>7</td><td class='num'>1.00</td><td class='ptext'>建议您尽快带父亲去看医生，让医生对他进行评估并制定康复方案。</td></tr><tr><td class='num'>1</td><td class='num'>1.00</td><td class='ptext'>如果店主想要在菜鸟驿站加盟的同时在淘宝上开店，可能需要经过一定的审核流程。</td></tr><tr><td class='num'>1</td><td class='num'>1.00</td><td class='ptext'>具体来说，当用户通过菜鸟驿站发送或接收包裹时，商家（比如淘宝店主）会支付一定的服务费用给菜鸟驿站。</td></tr><tr><td class='num'>1</td><td class='num'>1.00</td><td class='ptext'>另外，菜鸟驿站还可能通过向快递公司收取一些费用来盈利。</td></tr><tr><td class='num'>5</td><td class='num'>1.00</td><td class='ptext'>因此，在等额本息还款法中，总利息可能略高于等额本金还款法。</td></tr><tr><td class='num'>7</td><td class='num'>1.00</td><td class='ptext'>物理治疗可以帮助患者恢复身体功能，如运动能力、平衡能力等；</td></tr><tr><td class='num'>1</td><td class='num'>1.00</td><td class='ptext'>在加盟菜鸟驿站的情况下，店主可以使用菜鸟驿站的地址来接收包裹，但是不一定能赚取8毛钱。</td></tr><tr><td class='num'>7</td><td class='num'>1.00</td><td class='ptext'>康复训练可以帮助患者恢复日常生活能力，如自己穿衣服、洗澡等；</td></tr><tr><td class='num'>5</td><td class='num'>1.00</td><td class='ptext'>举个例子，假设你有一笔贷款，贷款本金为 10,000 元，年利率为 6%，贷款期限为 3 年，使用等额本息还款法和等额本金还款法进行还款。</td></tr><tr><td class='num'>7</td><td class='num'>1.00</td><td class='ptext'>\n\n总之，中风患者的康复是一个长期的过程，需要综合治疗和家属的支持，帮助患者尽快恢复正</td></tr><tr><td class='num'>3</td><td class='num'>1.00</td><td class='ptext'>这样，ptr 就存储了 x 变量的内存地址。</td></tr><tr><td class='num'>5</td><td class='num'>1.00</td><td class='ptext'>在实际情况中，选择哪种还款方式取决</td></tr><tr><td class='num'>7</td><td class='num'>1.00</td><td class='ptext'>\n很抱歉，在没有与您进行进一步沟通的情况下，我不能给出具体的建议。</td></tr><tr><td class='num'>1</td><td class='num'>1.00</td><td class='ptext'>菜鸟驿站是阿里巴巴旗下的快递服务公司，它主要通过向商家收取服务费来盈利。</td></tr><tr><td class='num'>7</td><td class='num'>1.00</td><td class='ptext'>心理治疗可以帮助患者应对抑郁、焦虑等情绪问题。</td></tr><tr><td class='num'>3</td><td class='num'>1.00</td><td class='ptext'>你可以通过指针来访问变量的值，例如： Copy code int y = *ptr;</td></tr></tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h2><span class="n">03</span>逐段明细</h2>
+  <p class="sec-lead">按段落给出分数、等级与触发特征。点「展开全文 / 判定依据」看原文与解释。</p>
+  <table>
+    <thead><tr>
+      <th class="num">#</th><th>类型</th><th class="num">字数</th>
+      <th class="num">P(AI)</th><th>等级</th><th>段落 / 依据</th>
+    </tr></thead>
+    <tbody><tr data-grade='high'><td class='num'>1</td><td>body</td><td class='num'>223</td><td class='num pcell' style='--heat:#f6bdb6;--w:100%'><span>1.00</span></td><td><span class='g high'>极高</span></td><td class='ptext'>菜鸟驿站是阿里巴巴旗下的快递服务公司，它主要通过向商家收取服务费来盈利。具体来说，当用户通过菜鸟驿站发送或接收包裹时，商家（比如淘宝店主）会支付一定的服务费用给菜鸟驿站。另外，菜鸟<details><summary>展开全文 / 判定依据</summary><div class='full'>菜鸟驿站是阿里巴巴旗下的快递服务公司，它主要通过向商家收取服务费来盈利。具体来说，当用户通过菜鸟驿站发送或接收包裹时，商家（比如淘宝店主）会支付一定的服务费用给菜鸟驿站。另外，菜鸟驿站还可能通过向快递公司收取一些费用来盈利。 在加盟菜鸟驿站的情况下，店主可以使用菜鸟驿站的地址来接收包裹，但是不一定能赚取8毛钱。菜鸟驿站通常会与加盟店主签订一份合同，具体细节可能会有所不同。如果店主想要在菜鸟驿站加盟的同时在淘宝上开店，可能需要经过一定的审核流程。</div><ul class='plain sig'><li>句式长度高度均匀（变异系数 0.20）</li></ul></details></td></tr><tr data-grade='low'><td class='num'>2</td><td>body</td><td class='num'>224</td><td class='num pcell' style='--heat:#bfe8d0;--w:0%'><span>0.00</span></td><td><span class='g low'>低</span></td><td class='ptext'>NV不能说吊打AMD，你以为真的是卡吧那种跑分高一点就是吊打了么，再者AMD的价格放在那里呢。NV和AMD的战争比Intel和AMD的战争激烈得多，Intel在CPU性能方面至少目<details><summary>展开全文 / 判定依据</summary><div class='full'>NV不能说吊打AMD，你以为真的是卡吧那种跑分高一点就是吊打了么，再者AMD的价格放在那里呢。NV和AMD的战争比Intel和AMD的战争激烈得多，Intel在CPU性能方面至少目前来说必胜无疑。但是NV和AMD的显卡战不一样，新一代泰坦能不能打得过pro duo，网上的说法不一，但pro duo超过旧泰坦和1080这是真的了，如果是这么说的话，你是否还认为显卡战里面AMD处于劣势呢？ 在u的领悟，农企被牙膏厂吊打，这几年是不用争论的了，但是显卡方面</div><ul class='plain sig'><li>流畅度明显低于全文平均（更像人工写作或专业表述）</li></ul></details></td></tr><tr data-grade='high'><td class='num'>3</td><td>body</td><td class='num'>304</td><td class='num pcell' style='--heat:#f6bdb6;--w:100%'><span>1.00</span></td><td><span class='g high'>极高</span></td><td class='ptext'>在计算机编程中，指针是一种特殊的变量，它存储的是某个变量的内存地址。 比如说，假设你有一个变量 x，它的值是 10。那么这个变量 x 就有一个内存地址，表示它在计算机内存中的位置。<details><summary>展开全文 / 判定依据</summary><div class='full'>在计算机编程中，指针是一种特殊的变量，它存储的是某个变量的内存地址。 比如说，假设你有一个变量 x，它的值是 10。那么这个变量 x 就有一个内存地址，表示它在计算机内存中的位置。你可以通过定义一个指针来存储这个内存地址。 例如，你可以这样定义一个指针： Copy code int *ptr; 这表示 ptr 是一个指向 int 类型变量的指针。你可以使用这个指针来存储 x 变量的内存地址，方法是这样的： Copy code ptr = &amp;x; 这样，ptr 就存储了 x 变量的内存地址。你可以通过指针来访问变量的值，例如： Copy code int y = *ptr; 这样，y 就等于 x 的值，即 10。 指针在编程中有很多用途，例如实现函数的参数传递、动态内存分配等。</div><ul class='plain sig'><li>句式长度高度均匀（变异系数 0.30）</li><li>三字片段重复率偏高（25%）</li></ul></details></td></tr><tr data-grade='low'><td class='num'>4</td><td>body</td><td class='num'>235</td><td class='num pcell' style='--heat:#bfe8d0;--w:1%'><span>0.01</span></td><td><span class='g low'>低</span></td><td class='ptext'>客户端（Client）或称为用户端，是指与服务器相对应，为客户提供本地服务的程序。除了一些只在本地运行的应用程序之外，一般安装在普通的客户机上，需要与服务端互相配合运行。因特网发展<details><summary>展开全文 / 判定依据</summary><div class='full'>客户端（Client）或称为用户端，是指与服务器相对应，为客户提供本地服务的程序。除了一些只在本地运行的应用程序之外，一般安装在普通的客户机上，需要与服务端互相配合运行。因特网发展以后，较常用的用户端包括了如万维网使用的网页浏览器，收寄电子邮件时的电子邮件客户端，以及即时通讯的客户端软件等。对于这一类应用程序，需要网络中有相应的服务器和服务程序来提供相应的服务，如数据库服务，电子邮件服务等等，这样在客户机和服务器端，需要建立特定的通信连接，来保证应用程序的正常运行。</div><ul class='plain sig'><li>句式长度高度均匀（变异系数 0.32）</li></ul></details></td></tr><tr data-grade='high'><td class='num'>5</td><td>body</td><td class='num'>363</td><td class='num pcell' style='--heat:#f6bdb6;--w:100%'><span>1.00</span></td><td><span class='g high'>极高</span></td><td class='ptext'>在等额本息还款法中，每期还款金额相等，其中包含了本金和利息。因此，在还款期数越多的情况下，每期所需偿还的利息越少，而本金越多。相反，在等额本金还款法中，每期偿还的本金金额相等，但利<details><summary>展开全文 / 判定依据</summary><div class='full'>在等额本息还款法中，每期还款金额相等，其中包含了本金和利息。因此，在还款期数越多的情况下，每期所需偿还的利息越少，而本金越多。相反，在等额本金还款法中，每期偿还的本金金额相等，但利息随着时间的推移而逐渐减少。因此，在等额本息还款法中，总利息可能略高于等额本金还款法。举个例子，假设你有一笔贷款，贷款本金为 10,000 元，年利率为 6%，贷款期限为 3 年，使用等额本息还款法和等额本金还款法进行还款。在等额本息还款法下，每期还款金额为 330.29 元，总利息为 990.87 元。在等额本金还款法下，每期还款金额分别为 333.33、333.33 和 333.34 元，总利息为 939.99 元。可以看出，在等额本息还款法下，总利息略高于等额本金还款法。不过，这并不意味着等额本息还款法就一定比等额本金还款法更劣。在实际情况中，选择哪种还款方式取决</div><ul class='plain sig'><li>句式长度高度均匀（变异系数 0.35）</li><li>三字片段重复率偏高（31%）</li><li>流畅度明显高于全文平均（更像模型生成）</li></ul></details></td></tr><tr data-grade='low'><td class='num'>6</td><td>body</td><td class='num'>321</td><td class='num pcell' style='--heat:#bfe8d0;--w:0%'><span>0.00</span></td><td><span class='g low'>低</span></td><td class='ptext'>建议您选择正规渠道办理借款，如银行渠道；通过招行贷款，贷款金额较小（#万以下），如您已是招行用户，并且下载了招商银行手机银行APP，您可以尝试通过登录手机银行，点击“我的”-“全部<details><summary>展开全文 / 判定依据</summary><div class='full'>建议您选择正规渠道办理借款，如银行渠道；通过招行贷款，贷款金额较小（#万以下），如您已是招行用户，并且下载了招商银行手机银行APP，您可以尝试通过登录手机银行，点击“我的”-“全部”-“贷款”-“我要借钱”，通过此界面尝试申请。若符合招行信用卡条件，可尝试申请信用卡。如贷款金额在#万以上，若您所在城市有招行，可通过招行网点尝试申请贷款，由于各贷款项目所需条件及申请材料有所不同，目前可贷款用途如下:购车、购车位、装修、教育学资、大宗消费购物、旅游等个人或家庭合法消费；以及生意方面周转的用途。您可在8:30-18:00致电9####，进入人工服务，提供贷款用途及城市详细了解所需资料。贷款申请是否通过，请以经办行个贷部门的综合审核结果为准。</div><ul class='plain sig'><li>未触发明显 AI 特征</li></ul></details></td></tr><tr data-grade='high'><td class='num'>7</td><td>body</td><td class='num'>366</td><td class='num pcell' style='--heat:#f6bdb6;--w:100%'><span>1.00</span></td><td><span class='g high'>极高</span></td><td class='ptext'>\n很抱歉，在没有与您进行进一步沟通的情况下，我不能给出具体的建议。但是，中风患者的康复通常是一个长期的过程，具体的康复方案需要根据患者的具体情况来制定。建议您尽快带父亲去看医生，<details><summary>展开全文 / 判定依据</summary><div class='full'>\n很抱歉，在没有与您进行进一步沟通的情况下，我不能给出具体的建议。但是，中风患者的康复通常是一个长期的过程，具体的康复方案需要根据患者的具体情况来制定。建议您尽快带父亲去看医生，让医生对他进行评估并制定康复方案。\n\n中风后的康复通常包括药物治疗、物理治疗、康复训练、心理治疗等。药物治疗可以帮助患者恢复血流，减少再次中风的风险；物理治疗可以帮助患者恢复身体功能，如运动能力、平衡能力等；康复训练可以帮助患者恢复日常生活能力，如自己穿衣服、洗澡等；心理治疗可以帮助患者应对抑郁、焦虑等情绪问题。\n\n此外，患者家属的配合和支持也很重要。患者家属可以帮助患者营造良好的生活环境，给予必要的帮助和支持，帮助患者保持积极的心态，促进康复进程。\n\n总之，中风患者的康复是一个长期的过程，需要综合治疗和家属的支持，帮助患者尽快恢复正</div><ul class='plain sig'><li>句式长度高度均匀（变异系数 0.27）</li><li>连接词密度偏高（0.82/百字）</li><li>三字片段重复率偏高（20%）</li><li>流畅度明显高于全文平均（更像模型生成）</li></ul></details></td></tr><tr data-grade='low'><td class='num'>8</td><td>body</td><td class='num'>283</td><td class='num pcell' style='--heat:#bfe8d0;--w:0%'><span>0.00</span></td><td><span class='g low'>低</span></td><td class='ptext'>儿童受到变应原、冷空气或其他诱因的刺激时，往往首先表现为上呼吸道过敏的症状，如眼痒、鼻痒、打喷嚏、流清涕等，婴幼儿因不能诉说，仅可见揉鼻搓眼等表现，进一步表现为上腭痒、咽痒、干咳和<details><summary>展开全文 / 判定依据</summary><div class='full'>儿童受到变应原、冷空气或其他诱因的刺激时，往往首先表现为上呼吸道过敏的症状，如眼痒、鼻痒、打喷嚏、流清涕等，婴幼儿因不能诉说，仅可见揉鼻搓眼等表现，进一步表现为上腭痒、咽痒、干咳和呛咳。 2、突然发作的喘息为儿童哮喘的主要特征，儿童哮喘的喘息症状根据哮喘的严重程度而有较大的差异。患儿可出现高调喘鸣声，不用听诊器或相隔一定距离即可听到。呼吸频度加快、呼吸困难，婴幼儿可表现为张口呼吸、鼻翼扇动。 3、严重发作时可表现为烦躁不安、紫绀、面色苍白、出冷汗。查体可见三凹征、心率加快、双肺有哮鸣音。进一步加重可出现心力衰竭的表现如颈静脉怒张、浮肿、肺底中、小水泡音、肝脏肿大。</div><ul class='plain sig'><li>未触发明显 AI 特征</li></ul></details></td></tr></tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h2><span class="n">04</span>引擎与标定</h2>
+  <p class="sec-lead">三个独立信号融合：判别器看「像不像模型写的」，困惑度看「有多可预测」，文体统计看「结构是否过分工整」。</p>
+  <div class='ok'><b>已加载标定参数。</b>标定版本 <code>1.0</code>。阈值（strict）：0.062。</div>
+  <table style="margin-top:14px">
+    <thead><tr><th>引擎</th><th>状态</th><th class="num">平均分</th><th class="num">耗时</th><th>说明</th></tr></thead>
+    <tbody><tr><td>中文判别模型</td><td><span class="g low">可用</span></td><td class='num'>0.500</td><td class='num'>8.8s</td><td class='ptext'>AI 类 = ChatGPT；窗口 12 次推理</td></tr><tr><td>困惑度/流畅度</td><td><span class="g low">可用</span></td><td class='num'>0.779</td><td class='num'>5.1s</td><td class='ptext'>GPT2-Chinese；73 次窗口推理</td></tr><tr><td>文体计量</td><td><span class="g low">可用</span></td><td class='num'>0.342</td><td class='num'>0.0s</td><td class='ptext'>纯统计特征，无需下载模型</td></tr></tbody>
+  </table>
+  <div class="grid2" style="margin-top:18px">
+    <div>
+      <h3 style="font-size:15px">口径定义</h3>
+      <ul class="plain">
+        <li><b>AI 生成占比（字数口径）</b>：Σ(段落字数 × P(AI)) ÷ 正文字数。连续值，不是「判定为 AI 的字数」。</li>
+        <li><b>AI 段落占比</b>：P(AI) ≥ 阈值 的段落数 ÷ 总段落数。</li>
+        <li><b>置信区间</b>：段落级 bootstrap 1000 次（固定种子，可复现），反映「段落间分歧」带来的不确定性。</li>
+        <li><b>正文</b>：已剔除参考文献、页眉页脚等元信息后的可评分数。</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="font-size:15px">怎么改</h3>
+      <ul class="plain">
+        <li>先改「极高」段落，再看「偏高」段落；改完重跑对比数字。</li>
+        <li>不要只做同义词替换——检测器主要看句式节奏与可预测性，同义替换无效。</li>
+        <li>把过分工整的三段式/排比句改成有具体信息量的短句，加入你自己的判断和例证。</li>
+        <li>保留专有名词与数据；删掉「综上所述」「值得注意的是」这类模板连接。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>复现：<code>python -m aidetect report 你的文档.docx --mode strict</code> ·
+  指纹 <code>{&quot;tool&quot;: &quot;ai-detect&quot;, &quot;calibration&quot;: {&quot;version&quot;: &quot;1.0&quot;, &quot;calibrated&quot;: true}, &quot;threshold&quot;: 0.0618, &quot;mode&quot;: &quot;strict&quot;, &quot;ai_rate_chars&quot;: 0.5424}</code></p>
+  <p>ai-detect 是自查工具，检测结论不等同于任何机构（知网/维普等）的正式检测结果。它们的模型、语料、
+  阈值都不公开，且彼此结论也常有分歧。请把本报告当作「哪些段落值得重写」的线索。</p>
+</footer>
+</div>
+<script>
+(function(){
+  var btns=document.querySelectorAll('[data-filter]');
+  btns.forEach(function(b){b.addEventListener('click',function(){
+    var k=b.getAttribute('data-filter');
+    btns.forEach(function(x){x.classList.remove('on')});b.classList.add('on');
+    document.querySelectorAll('tr[data-grade]').forEach(function(tr){
+      tr.style.display=(k==='all'||tr.getAttribute('data-grade')===k)?'':'none';
+    });
+  });});
+})();
+</script>
+</body>
+</html>

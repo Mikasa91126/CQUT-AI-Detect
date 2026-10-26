@@ -1,0 +1,272 @@
+{
+  "limit_units": {
+    "dev": 1135,
+    "test": 1417
+  },
+  "target_fpr": 0.05,
+  "recompute_check": {
+    "max_abs_diff": 0.0,
+    "diffs": {
+      "acc": 0.0,
+      "auc": 0.0,
+      "fpr": 0.0,
+      "fnr": 0.0,
+      "precision": 0.0,
+      "brier": 0.0
+    },
+    "test_metrics": {
+      "n": 1417,
+      "acc": 0.9435,
+      "auc": 0.993,
+      "fpr": 0.1309,
+      "fnr": 0.0,
+      "precision": 0.9097,
+      "brier": 0.0168,
+      "tp": 806,
+      "tn": 531,
+      "fp": 80,
+      "fn": 0,
+      "threshold": 0.0087
+    }
+  },
+  "ablation_no_ppl_rel_burst_rel": {
+    "C": 0.5,
+    "temperature": 0.711,
+    "threshold": 0.0107,
+    "dev": {
+      "n": 1135,
+      "acc": 0.9841,
+      "auc": 0.9999,
+      "fpr": 0.0542,
+      "fnr": 0.0,
+      "precision": 0.9781,
+      "brier": 0.0025,
+      "tp": 803,
+      "tn": 314,
+      "fp": 18,
+      "fn": 0,
+      "threshold": 0.0107
+    },
+    "test": {
+      "n": 1417,
+      "acc": 0.9442,
+      "auc": 0.9929,
+      "fpr": 0.1277,
+      "fnr": 0.0012,
+      "precision": 0.9117,
+      "brier": 0.017,
+      "tp": 805,
+      "tn": 533,
+      "fp": 78,
+      "fn": 1,
+      "threshold": 0.0107
+    }
+  },
+  "c_grid": {
+    "0.1": {
+      "C": 0.1,
+      "temperature": 0.5704,
+      "threshold": 0.0104,
+      "dev": {
+        "n": 1135,
+        "acc": 0.9841,
+        "auc": 1.0,
+        "fpr": 0.0542,
+        "fnr": 0.0,
+        "precision": 0.9781,
+        "brier": 0.0028,
+        "tp": 803,
+        "tn": 314,
+        "fp": 18,
+        "fn": 0,
+        "threshold": 0.0104
+      },
+      "test": {
+        "n": 1417,
+        "acc": 0.945,
+        "auc": 0.9934,
+        "fpr": 0.1277,
+        "fnr": 0.0,
+        "precision": 0.9118,
+        "brier": 0.0145,
+        "tp": 806,
+        "tn": 533,
+        "fp": 78,
+        "fn": 0,
+        "threshold": 0.0104
+      }
+    },
+    "0.5": {
+      "C": 0.5,
+      "temperature": 0.6848,
+      "threshold": 0.0087,
+      "dev": {
+        "n": 1135,
+        "acc": 0.9841,
+        "auc": 1.0,
+        "fpr": 0.0542,
+        "fnr": 0.0,
+        "precision": 0.9781,
+        "brier": 0.0024,
+        "tp": 803,
+        "tn": 314,
+        "fp": 18,
+        "fn": 0,
+        "threshold": 0.0087
+      },
+      "test": {
+        "n": 1417,
+        "acc": 0.9435,
+        "auc": 0.993,
+        "fpr": 0.1309,
+        "fnr": 0.0,
+        "precision": 0.9097,
+        "brier": 0.0168,
+        "tp": 806,
+        "tn": 531,
+        "fp": 80,
+        "fn": 0,
+        "threshold": 0.0087
+      }
+    },
+    "1.0": {
+      "C": 1.0,
+      "temperature": 0.7191,
+      "threshold": 0.0071,
+      "dev": {
+        "n": 1135,
+        "acc": 0.9841,
+        "auc": 1.0,
+        "fpr": 0.0542,
+        "fnr": 0.0,
+        "precision": 0.9781,
+        "brier": 0.0022,
+        "tp": 803,
+        "tn": 314,
+        "fp": 18,
+        "fn": 0,
+        "threshold": 0.0071
+      },
+      "test": {
+        "n": 1417,
+        "acc": 0.9428,
+        "auc": 0.9929,
+        "fpr": 0.1326,
+        "fnr": 0.0,
+        "precision": 0.9087,
+        "brier": 0.0178,
+        "tp": 806,
+        "tn": 530,
+        "fp": 81,
+        "fn": 0,
+        "threshold": 0.0071
+      }
+    }
+  },
+  "domain_check": {
+    "dev_domains": [
+      "finance",
+      "law",
+      "medicine"
+    ],
+    "test_domains": [
+      "baike",
+      "nlpcc_dbqa",
+      "open_qa",
+      "psychology"
+    ],
+    "overlap": [],
+    "dev_ok": true,
+    "test_ok": true,
+    "units_per_test_domain": {
+      "baike": 302,
+      "nlpcc_dbqa": 294,
+      "open_qa": 512,
+      "psychology": 309
+    },
+    "labels_per_test_domain": {
+      "baike": {
+        "human": 152,
+        "ai": 150
+      },
+      "nlpcc_dbqa": {
+        "human": 144,
+        "ai": 150
+      },
+      "open_qa": {
+        "human": 156,
+        "ai": 356
+      },
+      "psychology": {
+        "human": 159,
+        "ai": 150
+      }
+    }
+  },
+  "per_domain_auc_serialized": {
+    "baike": {
+      "n": 302,
+      "acc": 0.9603,
+      "auc": 0.9955,
+      "fpr": 0.0789,
+      "fnr": 0.0,
+      "precision": 0.9259,
+      "brier": 0.0391,
+      "tp": 150,
+      "tn": 140,
+      "fp": 12,
+      "fn": 0,
+      "threshold": 0.5
+    },
+    "nlpcc_dbqa": {
+      "n": 294,
+      "acc": 0.9524,
+      "auc": 0.979,
+      "fpr": 0.0903,
+      "fnr": 0.0067,
+      "precision": 0.9198,
+      "brier": 0.0374,
+      "tp": 149,
+      "tn": 131,
+      "fp": 13,
+      "fn": 1,
+      "threshold": 0.5
+    },
+    "open_qa": {
+      "n": 512,
+      "acc": 0.998,
+      "auc": 1.0,
+      "fpr": 0.0,
+      "fnr": 0.0028,
+      "precision": 1.0,
+      "brier": 0.0019,
+      "tp": 355,
+      "tn": 156,
+      "fp": 0,
+      "fn": 1,
+      "threshold": 0.5
+    },
+    "psychology": {
+      "n": 309,
+      "acc": 1.0,
+      "auc": 1.0,
+      "fpr": 0.0,
+      "fnr": 0.0,
+      "precision": 1.0,
+      "brier": 0.0001,
+      "tp": 150,
+      "tn": 159,
+      "fp": 0,
+      "fn": 0,
+      "threshold": 0.5
+    }
+  },
+  "gates": {
+    "balanced_test": [
+      "FPR 0.1309 不在 [0.03, 0.08]"
+    ],
+    "balanced_ok": false,
+    "per_domain_auc_ok": true,
+    "per_domain_auc_bad": {}
+  }
+}

@@ -1,0 +1,589 @@
+{
+  "raw": {
+    "per_domain": {
+      "open_qa": {
+        "questions": 3293,
+        "human": 7377,
+        "ai": 3991,
+        "human_keep": 5220,
+        "ai_keep": 3384,
+        "human_chars": 1024170,
+        "ai_chars": 986222
+      },
+      "baike": {
+        "questions": 4617,
+        "human": 4617,
+        "ai": 4617,
+        "human_keep": 3364,
+        "ai_keep": 2649,
+        "human_chars": 847807,
+        "ai_chars": 476397
+      },
+      "nlpcc_dbqa": {
+        "questions": 1709,
+        "human": 1709,
+        "ai": 4253,
+        "human_keep": 144,
+        "ai_keep": 1872,
+        "human_chars": 27390,
+        "ai_chars": 420972
+      },
+      "finance": {
+        "questions": 689,
+        "human": 1572,
+        "ai": 1983,
+        "human_keep": 341,
+        "ai_keep": 1592,
+        "human_chars": 77027,
+        "ai_chars": 384496
+      },
+      "medicine": {
+        "questions": 1074,
+        "human": 1074,
+        "ai": 1074,
+        "human_keep": 817,
+        "ai_keep": 1021,
+        "human_chars": 148445,
+        "ai_chars": 288972
+      },
+      "psychology": {
+        "questions": 1099,
+        "human": 5220,
+        "ai": 1099,
+        "human_keep": 3088,
+        "ai_keep": 1025,
+        "human_chars": 887714,
+        "ai_chars": 300583
+      },
+      "law": {
+        "questions": 372,
+        "human": 690,
+        "ai": 505,
+        "human_keep": 30,
+        "ai_keep": 445,
+        "human_chars": 4287,
+        "ai_chars": 118023
+      }
+    },
+    "totals": {
+      "questions": 12853,
+      "human": 22259,
+      "ai": 17522,
+      "human_keep": 13004,
+      "ai_keep": 11988
+    }
+  },
+  "n_samples": 24992,
+  "limits": {
+    "120": {
+      "dev": {
+        "limit": 120,
+        "n_docs": 593,
+        "n_units": 905,
+        "n_docs_one_unit": 473,
+        "n_docs_empty": 0,
+        "unit_chars_mean": 158.9,
+        "unit_chars_p50": 139,
+        "unit_chars_p90": 318,
+        "unit_chars_max": 668,
+        "per_domain_docs": {
+          "finance": 212,
+          "law": 141,
+          "medicine": 240
+        },
+        "per_domain_units": {
+          "finance": 241,
+          "law": 422,
+          "medicine": 242
+        },
+        "per_domain_label_units": {
+          "finance": {
+            "human": 120,
+            "ai": 121
+          },
+          "law": {
+            "human": 30,
+            "ai": 392
+          },
+          "medicine": {
+            "human": 122,
+            "ai": 120
+          }
+        },
+        "label_units": {
+          "human": 272,
+          "ai": 633
+        },
+        "n_human_units": 272,
+        "n_ai_units": 633,
+        "clf_forwards_unique": 970,
+        "clf_forwards_total": 1019,
+        "ppl_forwards_unique": 1044,
+        "ppl_forwards_total": 1097,
+        "ppl_sentence_forwards": 3629,
+        "ppl_forwards_est": 4673
+      },
+      "test": {
+        "limit": 120,
+        "n_docs": 948,
+        "n_units": 1146,
+        "n_docs_one_unit": 876,
+        "n_docs_empty": 0,
+        "unit_chars_mean": 192.7,
+        "unit_chars_p50": 175,
+        "unit_chars_p90": 336,
+        "unit_chars_max": 794,
+        "per_domain_docs": {
+          "open_qa": 237,
+          "baike": 240,
+          "psychology": 235,
+          "nlpcc_dbqa": 236
+        },
+        "per_domain_units": {
+          "open_qa": 419,
+          "baike": 242,
+          "psychology": 245,
+          "nlpcc_dbqa": 240
+        },
+        "per_domain_label_units": {
+          "open_qa": {
+            "human": 125,
+            "ai": 294
+          },
+          "baike": {
+            "human": 122,
+            "ai": 120
+          },
+          "psychology": {
+            "human": 125,
+            "ai": 120
+          },
+          "nlpcc_dbqa": {
+            "human": 120,
+            "ai": 120
+          }
+        },
+        "label_units": {
+          "human": 492,
+          "ai": 654
+        },
+        "n_human_units": 492,
+        "n_ai_units": 654,
+        "clf_forwards_unique": 1343,
+        "clf_forwards_total": 1343,
+        "ppl_forwards_unique": 1489,
+        "ppl_forwards_total": 1489,
+        "ppl_sentence_forwards": 5272,
+        "ppl_forwards_est": 6761
+      }
+    },
+    "150": {
+      "dev": {
+        "limit": 150,
+        "n_docs": 730,
+        "n_units": 1135,
+        "n_docs_one_unit": 580,
+        "n_docs_empty": 0,
+        "unit_chars_mean": 158.0,
+        "unit_chars_p50": 137,
+        "unit_chars_p90": 319,
+        "unit_chars_max": 668,
+        "per_domain_docs": {
+          "finance": 264,
+          "law": 166,
+          "medicine": 300
+        },
+        "per_domain_units": {
+          "finance": 301,
+          "law": 532,
+          "medicine": 302
+        },
+        "per_domain_label_units": {
+          "finance": {
+            "human": 150,
+            "ai": 151
+          },
+          "law": {
+            "human": 30,
+            "ai": 502
+          },
+          "medicine": {
+            "human": 152,
+            "ai": 150
+          }
+        },
+        "label_units": {
+          "human": 332,
+          "ai": 803
+        },
+        "n_human_units": 332,
+        "n_ai_units": 803,
+        "clf_forwards_unique": 1219,
+        "clf_forwards_total": 1285,
+        "ppl_forwards_unique": 1310,
+        "ppl_forwards_total": 1381,
+        "ppl_sentence_forwards": 4539,
+        "ppl_forwards_est": 5849
+      },
+      "test": {
+        "limit": 150,
+        "n_docs": 1170,
+        "n_units": 1417,
+        "n_docs_one_unit": 1073,
+        "n_docs_empty": 0,
+        "unit_chars_mean": 195.7,
+        "unit_chars_p50": 177,
+        "unit_chars_p90": 337,
+        "unit_chars_max": 794,
+        "per_domain_docs": {
+          "open_qa": 291,
+          "baike": 300,
+          "psychology": 291,
+          "nlpcc_dbqa": 288
+        },
+        "per_domain_units": {
+          "open_qa": 512,
+          "baike": 302,
+          "psychology": 309,
+          "nlpcc_dbqa": 294
+        },
+        "per_domain_label_units": {
+          "open_qa": {
+            "human": 156,
+            "ai": 356
+          },
+          "baike": {
+            "human": 152,
+            "ai": 150
+          },
+          "psychology": {
+            "human": 159,
+            "ai": 150
+          },
+          "nlpcc_dbqa": {
+            "human": 144,
+            "ai": 150
+          }
+        },
+        "label_units": {
+          "human": 611,
+          "ai": 806
+        },
+        "n_human_units": 611,
+        "n_ai_units": 806,
+        "clf_forwards_unique": 1670,
+        "clf_forwards_total": 1671,
+        "ppl_forwards_unique": 1859,
+        "ppl_forwards_total": 1859,
+        "ppl_sentence_forwards": 6575,
+        "ppl_forwards_est": 8434
+      }
+    },
+    "200": {
+      "dev": {
+        "limit": 200,
+        "n_docs": 954,
+        "n_units": 1505,
+        "n_docs_one_unit": 753,
+        "n_docs_empty": 0,
+        "unit_chars_mean": 159.1,
+        "unit_chars_p50": 137,
+        "unit_chars_p90": 319,
+        "unit_chars_max": 767,
+        "per_domain_docs": {
+          "finance": 346,
+          "law": 208,
+          "medicine": 400
+        },
+        "per_domain_units": {
+          "finance": 402,
+          "law": 701,
+          "medicine": 402
+        },
+        "per_domain_label_units": {
+          "finance": {
+            "human": 201,
+            "ai": 201
+          },
+          "law": {
+            "human": 30,
+            "ai": 671
+          },
+          "medicine": {
+            "human": 202,
+            "ai": 200
+          }
+        },
+        "label_units": {
+          "human": 433,
+          "ai": 1072
+        },
+        "n_human_units": 433,
+        "n_ai_units": 1072,
+        "clf_forwards_unique": 1605,
+        "clf_forwards_total": 1703,
+        "ppl_forwards_unique": 1736,
+        "ppl_forwards_total": 1842,
+        "ppl_sentence_forwards": 6024,
+        "ppl_forwards_est": 7760
+      },
+      "test": {
+        "limit": 200,
+        "n_docs": 1499,
+        "n_units": 1807,
+        "n_docs_one_unit": 1364,
+        "n_docs_empty": 0,
+        "unit_chars_mean": 198.5,
+        "unit_chars_p50": 180,
+        "unit_chars_p90": 339,
+        "unit_chars_max": 794,
+        "per_domain_docs": {
+          "open_qa": 384,
+          "baike": 400,
+          "psychology": 384,
+          "nlpcc_dbqa": 331
+        },
+        "per_domain_units": {
+          "open_qa": 646,
+          "baike": 403,
+          "psychology": 414,
+          "nlpcc_dbqa": 344
+        },
+        "per_domain_label_units": {
+          "open_qa": {
+            "human": 209,
+            "ai": 437
+          },
+          "baike": {
+            "human": 203,
+            "ai": 200
+          },
+          "psychology": {
+            "human": 212,
+            "ai": 202
+          },
+          "nlpcc_dbqa": {
+            "human": 144,
+            "ai": 200
+          }
+        },
+        "label_units": {
+          "human": 768,
+          "ai": 1039
+        },
+        "n_human_units": 768,
+        "n_ai_units": 1039,
+        "clf_forwards_unique": 2122,
+        "clf_forwards_total": 2128,
+        "ppl_forwards_unique": 2380,
+        "ppl_forwards_total": 2386,
+        "ppl_sentence_forwards": 8570,
+        "ppl_forwards_est": 10950
+      }
+    },
+    "300": {
+      "dev": {
+        "limit": 300,
+        "n_docs": 1373,
+        "n_units": 2230,
+        "n_docs_one_unit": 1070,
+        "n_docs_empty": 0,
+        "unit_chars_mean": 161.6,
+        "unit_chars_p50": 138,
+        "unit_chars_p90": 320,
+        "unit_chars_max": 767,
+        "per_domain_docs": {
+          "finance": 489,
+          "law": 284,
+          "medicine": 600
+        },
+        "per_domain_units": {
+          "finance": 602,
+          "law": 1018,
+          "medicine": 610
+        },
+        "per_domain_label_units": {
+          "finance": {
+            "human": 301,
+            "ai": 301
+          },
+          "law": {
+            "human": 30,
+            "ai": 988
+          },
+          "medicine": {
+            "human": 310,
+            "ai": 300
+          }
+        },
+        "label_units": {
+          "human": 641,
+          "ai": 1589
+        },
+        "n_human_units": 641,
+        "n_ai_units": 1589,
+        "clf_forwards_unique": 2368,
+        "clf_forwards_total": 2540,
+        "ppl_forwards_unique": 2555,
+        "ppl_forwards_total": 2745,
+        "ppl_sentence_forwards": 9054,
+        "ppl_forwards_est": 11609
+      },
+      "test": {
+        "limit": 300,
+        "n_docs": 2146,
+        "n_units": 2686,
+        "n_docs_one_unit": 1902,
+        "n_docs_empty": 0,
+        "unit_chars_mean": 197.0,
+        "unit_chars_p50": 176,
+        "unit_chars_p90": 343,
+        "unit_chars_max": 794,
+        "per_domain_docs": {
+          "open_qa": 574,
+          "baike": 600,
+          "psychology": 559,
+          "nlpcc_dbqa": 413
+        },
+        "per_domain_units": {
+          "open_qa": 1012,
+          "baike": 607,
+          "psychology": 623,
+          "nlpcc_dbqa": 444
+        },
+        "per_domain_label_units": {
+          "open_qa": {
+            "human": 313,
+            "ai": 699
+          },
+          "baike": {
+            "human": 303,
+            "ai": 304
+          },
+          "psychology": {
+            "human": 319,
+            "ai": 304
+          },
+          "nlpcc_dbqa": {
+            "human": 144,
+            "ai": 300
+          }
+        },
+        "label_units": {
+          "human": 1079,
+          "ai": 1607
+        },
+        "n_human_units": 1079,
+        "n_ai_units": 1607,
+        "clf_forwards_unique": 3165,
+        "clf_forwards_total": 3173,
+        "ppl_forwards_unique": 3537,
+        "ppl_forwards_total": 3548,
+        "ppl_sentence_forwards": 12731,
+        "ppl_forwards_est": 16268
+      }
+    },
+    "None": {
+      "dev": {
+        "limit": null,
+        "n_docs": 3085,
+        "n_units": 5284,
+        "n_docs_one_unit": 2365,
+        "n_docs_empty": 0,
+        "unit_chars_mean": 190.7,
+        "unit_chars_p50": 175,
+        "unit_chars_p90": 335,
+        "unit_chars_max": 767,
+        "per_domain_docs": {
+          "finance": 877,
+          "law": 370,
+          "medicine": 1838
+        },
+        "per_domain_units": {
+          "finance": 1938,
+          "law": 1482,
+          "medicine": 1864
+        },
+        "per_domain_label_units": {
+          "finance": {
+            "human": 342,
+            "ai": 1596
+          },
+          "law": {
+            "human": 30,
+            "ai": 1452
+          },
+          "medicine": {
+            "human": 842,
+            "ai": 1022
+          }
+        },
+        "label_units": {
+          "human": 1214,
+          "ai": 4070
+        },
+        "n_human_units": 1214,
+        "n_ai_units": 4070,
+        "clf_forwards_unique": 6018,
+        "clf_forwards_total": 6223,
+        "ppl_forwards_unique": 6798,
+        "ppl_forwards_total": 7025,
+        "ppl_sentence_forwards": 26021,
+        "ppl_forwards_est": 32819
+      },
+      "test": {
+        "limit": null,
+        "n_docs": 14387,
+        "n_units": 26121,
+        "n_docs_one_unit": 9121,
+        "n_docs_empty": 1,
+        "unit_chars_mean": 183.0,
+        "unit_chars_p50": 173,
+        "unit_chars_p90": 319,
+        "unit_chars_max": 800,
+        "per_domain_docs": {
+          "open_qa": 5100,
+          "baike": 6013,
+          "psychology": 2071,
+          "nlpcc_dbqa": 1203
+        },
+        "per_domain_units": {
+          "open_qa": 13613,
+          "baike": 6071,
+          "psychology": 4414,
+          "nlpcc_dbqa": 2023
+        },
+        "per_domain_label_units": {
+          "open_qa": {
+            "human": 5306,
+            "ai": 8307
+          },
+          "baike": {
+            "human": 3409,
+            "ai": 2662
+          },
+          "psychology": {
+            "human": 3374,
+            "ai": 1040
+          },
+          "nlpcc_dbqa": {
+            "human": 144,
+            "ai": 1879
+          }
+        },
+        "label_units": {
+          "human": 12233,
+          "ai": 13888
+        },
+        "n_human_units": 12233,
+        "n_ai_units": 13888,
+        "clf_forwards_unique": 29325,
+        "clf_forwards_total": 29647,
+        "ppl_forwards_unique": 32048,
+        "ppl_forwards_total": 32454,
+        "ppl_sentence_forwards": 117200,
+        "ppl_forwards_est": 149248
+      }
+    }
+  }
+}

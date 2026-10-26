@@ -1,0 +1,190 @@
+{
+  "dataset": "Hello-SimpleAI/HC3-Chinese",
+  "dataset_path": "C:\\Users\\mikasa\\Documents\\DeepSeek Harness\\ai-detect\\data\\hc3zh\\all.jsonl",
+  "dataset_sha256": "425e7071bbd5dd88efd85d51e28a5adec9c72e04d96c52d194bdfb95fef00b0d",
+  "fixture": "mixed_hc3.txt",
+  "size_bytes": 6603,
+  "total_chars": 2319,
+  "normalization": "CRLF→LF；换行→空格；连续空白折叠；首尾去空白",
+  "selection": {
+    "rule": "AI 侧取 4 条真实 chatgpt_answers[0]（4 个不同域名/问题），人类侧取 4 条真实 human_answers[0]（同 4 个域名、不同问题），按 ai,human 交替拼接；单段上限 400 字，超出按句边界截断",
+    "trim_limit": 400,
+    "spec": [
+      {
+        "paragraph": 0,
+        "label": "ai",
+        "line_no": 1273,
+        "field": "chatgpt",
+        "answer_index": 0,
+        "source": "open_qa"
+      },
+      {
+        "paragraph": 1,
+        "label": "human",
+        "line_no": 1310,
+        "field": "human",
+        "answer_index": 0,
+        "source": "open_qa"
+      },
+      {
+        "paragraph": 2,
+        "label": "ai",
+        "line_no": 3309,
+        "field": "chatgpt",
+        "answer_index": 0,
+        "source": "baike"
+      },
+      {
+        "paragraph": 3,
+        "label": "human",
+        "line_no": 3300,
+        "field": "human",
+        "answer_index": 0,
+        "source": "baike"
+      },
+      {
+        "paragraph": 4,
+        "label": "ai",
+        "line_no": 9622,
+        "field": "chatgpt",
+        "answer_index": 0,
+        "source": "finance"
+      },
+      {
+        "paragraph": 5,
+        "label": "human",
+        "line_no": 9634,
+        "field": "human",
+        "answer_index": 0,
+        "source": "finance"
+      },
+      {
+        "paragraph": 6,
+        "label": "ai",
+        "line_no": 10334,
+        "field": "chatgpt",
+        "answer_index": 0,
+        "source": "medicine"
+      },
+      {
+        "paragraph": 7,
+        "label": "human",
+        "line_no": 10310,
+        "field": "human",
+        "answer_index": 0,
+        "source": "medicine"
+      }
+    ]
+  },
+  "sections": [
+    {
+      "paragraph": 0,
+      "label": "ai",
+      "source": "open_qa",
+      "line_no": 1273,
+      "field": "chatgpt",
+      "answer_index": 0,
+      "question": "菜鸟驿站是如何盈利的？收入的费用是由哪方来买单？听朋友说菜鸟驿站每代收一单可以赚8毛钱，那这钱是谁来出？淘宝？店家？快递？假设有人加盟了菜鸟驿站，同时又有了一个淘宝店，那么他通菜鸟驿站的地址刷信誉，同时还能赚8毛钱。这个逻辑讲的通吗？<blockquote>网上搜来的资料：菜鸟驿站门店必须具备电脑或者安卓手机，店铺有1至2平方包裹摆放空间。缴纳平台服务费2800元保证金1000元合作结束后退还。<blockquote>",
+      "chars": 223,
+      "truncated": false
+    },
+    {
+      "paragraph": 1,
+      "label": "human",
+      "source": "open_qa",
+      "line_no": 1310,
+      "field": "human",
+      "answer_index": 0,
+      "question": "英伟达为什么不学Intel挤牙膏？明明吊打按摩店，何不好好挤牙膏？老黄的思路是怎样的",
+      "chars": 224,
+      "truncated": false
+    },
+    {
+      "paragraph": 2,
+      "label": "ai",
+      "source": "baike",
+      "line_no": 3309,
+      "field": "chatgpt",
+      "answer_index": 0,
+      "question": "我有一个计算机相关的问题，请用中文回答，什么是 指针",
+      "chars": 304,
+      "truncated": false
+    },
+    {
+      "paragraph": 3,
+      "label": "human",
+      "source": "baike",
+      "line_no": 3300,
+      "field": "human",
+      "answer_index": 0,
+      "question": "我有一个计算机相关的问题，请用中文回答，什么是 客户端",
+      "chars": 235,
+      "truncated": false
+    },
+    {
+      "paragraph": 4,
+      "label": "ai",
+      "source": "finance",
+      "line_no": 9622,
+      "field": "chatgpt",
+      "answer_index": 0,
+      "question": "等额本息和等额本金的利息一样多吗",
+      "chars": 363,
+      "truncated": false
+    },
+    {
+      "paragraph": 5,
+      "label": "human",
+      "source": "finance",
+      "line_no": 9634,
+      "field": "human",
+      "answer_index": 0,
+      "question": "在北*上班的外地人有社保能贷款吗",
+      "chars": 321,
+      "truncated": false
+    },
+    {
+      "paragraph": 6,
+      "label": "ai",
+      "source": "medicine",
+      "line_no": 10334,
+      "field": "chatgpt",
+      "answer_index": 0,
+      "question": "怎样能中风病人康复 我爸爸岁数大了，最近我发现他精神是不太好，而且爱忘记事情，头昏是他自己说的，说有时候走着走着就会有晕眩的感觉，我们家人也是很担心的，请问怎样能中风病人康复",
+      "chars": 366,
+      "truncated": false
+    },
+    {
+      "paragraph": 7,
+      "label": "human",
+      "source": "medicine",
+      "line_no": 10310,
+      "field": "human",
+      "answer_index": 0,
+      "question": "小孩哮喘有什么症状？ 无",
+      "chars": 283,
+      "truncated": false
+    }
+  ],
+  "order": [
+    "ai",
+    "human",
+    "ai",
+    "human",
+    "ai",
+    "human",
+    "ai",
+    "human"
+  ],
+  "assertions": {
+    "ai_rate_chars_range": [
+      0.3,
+      0.85
+    ],
+    "rationale": "8 段中 4 段为真实 chatgpt 回答、4 段为真实 human 回答，字数权重约各一半；整篇 AI 率下界取 0.3（宽松但非平凡），上界 0.85 防止「全判 AI」的退化。段落级断言更严格：AI 段 p_ai 中位数 > 0.5、人类段 p_ai 中位数 < 0.1。这是测试设计选择（用真实 AI 文本做证据），不是对产品指标的期望值。",
+    "ai_label_median_min": 0.5,
+    "human_label_median_max": 0.1
+  },
+  "generator": "python tools/e2e.py --build-mixed-fixture",
+  "generated_at": "2026-10-26T13:22:53+0800"
+}

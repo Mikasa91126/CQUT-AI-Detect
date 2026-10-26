@@ -1,0 +1,236 @@
+{
+  "version": "1.0",
+  "calibrated": true,
+  "generated_at": "2026-10-26T13:02:52",
+  "features": [
+    "clf_mean",
+    "clf_max",
+    "clf_std",
+    "ppl_rel",
+    "top10",
+    "burst_rel",
+    "st_cv_slen",
+    "st_conn100",
+    "st_tmpl100",
+    "st_repeat3"
+  ],
+  "mean": {
+    "clf_mean": 0.705476,
+    "clf_max": 0.705518,
+    "clf_std": 0.000929,
+    "ppl_rel": 0.0,
+    "top10": 0.814142,
+    "burst_rel": 0.0,
+    "st_cv_slen": 0.294197,
+    "st_conn100": 0.327577,
+    "st_tmpl100": 0.006779,
+    "st_repeat3": 0.084039
+  },
+  "std": {
+    "clf_mean": 0.45492,
+    "clf_max": 0.454935,
+    "clf_std": 0.028233,
+    "ppl_rel": 0.645554,
+    "top10": 0.06787,
+    "burst_rel": 0.497571,
+    "st_cv_slen": 0.234873,
+    "st_conn100": 0.637434,
+    "st_tmpl100": 0.072927,
+    "st_repeat3": 0.083218
+  },
+  "coef": {
+    "clf_mean": 2.183396,
+    "clf_max": 2.183656,
+    "clf_std": 0.049113,
+    "ppl_rel": -0.470496,
+    "top10": 0.937615,
+    "burst_rel": -0.026696,
+    "st_cv_slen": -0.620183,
+    "st_conn100": -0.080835,
+    "st_tmpl100": -0.071221,
+    "st_repeat3": 0.472986
+  },
+  "intercept": 3.08552,
+  "temperature": 0.6848,
+  "thresholds": {
+    "high": 0.0348,
+    "mid_high": 0.0087,
+    "mid": 0.0043
+  },
+  "mode_thresholds": {
+    "strict": 0.0618,
+    "balanced": 0.0087,
+    "lenient": 0.0042
+  },
+  "evaluation": {
+    "strict": {
+      "target_fpr": 0.01,
+      "dev": {
+        "n": 1135,
+        "acc": 0.9965,
+        "auc": 1.0,
+        "fpr": 0.012,
+        "fnr": 0.0,
+        "precision": 0.995,
+        "brier": 0.0024,
+        "tp": 803,
+        "tn": 328,
+        "fp": 4,
+        "fn": 0,
+        "threshold": 0.0618
+      },
+      "test": {
+        "n": 1417,
+        "acc": 0.9711,
+        "auc": 0.993,
+        "fpr": 0.0655,
+        "fnr": 0.0012,
+        "precision": 0.9527,
+        "brier": 0.0168,
+        "tp": 805,
+        "tn": 571,
+        "fp": 40,
+        "fn": 1,
+        "threshold": 0.0618
+      }
+    },
+    "balanced": {
+      "target_fpr": 0.05,
+      "dev": {
+        "n": 1135,
+        "acc": 0.9841,
+        "auc": 1.0,
+        "fpr": 0.0542,
+        "fnr": 0.0,
+        "precision": 0.9781,
+        "brier": 0.0024,
+        "tp": 803,
+        "tn": 314,
+        "fp": 18,
+        "fn": 0,
+        "threshold": 0.0087
+      },
+      "test": {
+        "n": 1417,
+        "acc": 0.9435,
+        "auc": 0.993,
+        "fpr": 0.1309,
+        "fnr": 0.0,
+        "precision": 0.9097,
+        "brier": 0.0168,
+        "tp": 806,
+        "tn": 531,
+        "fp": 80,
+        "fn": 0,
+        "threshold": 0.0087
+      }
+    },
+    "lenient": {
+      "target_fpr": 0.1,
+      "dev": {
+        "n": 1135,
+        "acc": 0.97,
+        "auc": 1.0,
+        "fpr": 0.1024,
+        "fnr": 0.0,
+        "precision": 0.9594,
+        "brier": 0.0024,
+        "tp": 803,
+        "tn": 298,
+        "fp": 34,
+        "fn": 0,
+        "threshold": 0.0042
+      },
+      "test": {
+        "n": 1417,
+        "acc": 0.9146,
+        "auc": 0.993,
+        "fpr": 0.198,
+        "fnr": 0.0,
+        "precision": 0.8695,
+        "brier": 0.0168,
+        "tp": 806,
+        "tn": 490,
+        "fp": 121,
+        "fn": 0,
+        "threshold": 0.0042
+      }
+    }
+  },
+  "per_domain": {
+    "open_qa": {
+      "n": 512,
+      "acc": 0.9922,
+      "auc": 1.0,
+      "fpr": 0.0256,
+      "fnr": 0.0,
+      "precision": 0.9889,
+      "brier": 0.0019,
+      "tp": 356,
+      "tn": 152,
+      "fp": 4,
+      "fn": 0,
+      "threshold": 0.0087
+    },
+    "baike": {
+      "n": 302,
+      "acc": 0.9305,
+      "auc": 0.9955,
+      "fpr": 0.1382,
+      "fnr": 0.0,
+      "precision": 0.8772,
+      "brier": 0.0391,
+      "tp": 150,
+      "tn": 131,
+      "fp": 21,
+      "fn": 0,
+      "threshold": 0.0087
+    },
+    "psychology": {
+      "n": 309,
+      "acc": 0.9968,
+      "auc": 1.0,
+      "fpr": 0.0063,
+      "fnr": 0.0,
+      "precision": 0.9934,
+      "brier": 0.0001,
+      "tp": 150,
+      "tn": 158,
+      "fp": 1,
+      "fn": 0,
+      "threshold": 0.0087
+    },
+    "nlpcc_dbqa": {
+      "n": 294,
+      "acc": 0.8163,
+      "auc": 0.979,
+      "fpr": 0.375,
+      "fnr": 0.0,
+      "precision": 0.7353,
+      "brier": 0.0374,
+      "tp": 150,
+      "tn": 90,
+      "fp": 54,
+      "fn": 0,
+      "threshold": 0.0087
+    }
+  },
+  "dataset": {
+    "name": "Hello-SimpleAI/HC3-Chinese",
+    "dev_domains": [
+      "finance",
+      "law",
+      "medicine"
+    ],
+    "test_domains": [
+      "open_qa",
+      "baike",
+      "psychology",
+      "nlpcc_dbqa"
+    ],
+    "n_dev": 1135,
+    "n_test": 1417,
+    "note": "HC3 为 GPT-3.5 时代的中文问答语料，与学位论文/学术写作存在领域与时代差异；test 为域名留出，未参与拟合。"
+  },
+  "note": "特征按 features 顺序取；logit = Σ coef·(x-mean)/std + intercept，p = sigmoid(logit/T)。"
+}

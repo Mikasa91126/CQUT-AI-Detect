@@ -1,0 +1,145 @@
+ai-detect 真实模型 smoke
+  项目根 C:\Users\mikasa\Documents\DeepSeek Harness\ai-detect
+  平台 Windows-11-10.0.26300-SP0 / 18 逻辑核
+  版本 {"python": "3.12.10", "torch": "2.14.0+cpu", "transformers": "5.20.2", "tokenizers": "0.23.3", "numpy": "2.3.5"}
+  HC3 样本 24992 条；同题成对分组 6173 组
+
+== fixture 概览（HC3 同题样本拼接）
+    120 字 / AI  ：正文 154 字 / 2 单元 / 154 字
+    120 字 / 人类：正文 125 字 / 1 单元 / 125 字
+    900 字 / AI  ：正文 932 字 / 5 单元 / 932 字
+    900 字 / 人类：正文 908 字 / 8 单元 / 908 字
+   3000 字 / AI  ：正文 3010 字 / 11 单元 / 3010 字
+   3000 字 / 人类：正文 2838 字 / 26 单元 / 3012 字
+
+== 引擎加载
+  [clf  ] OK   中文判别模型  冷启动 4.37s（其中加载≈4.32s）  路径 C:\Users\mikasa\Documents\DeepSeek Harness\ai-detect\models\clf
+          就绪
+  [ppl  ] OK   困惑度/流畅度  冷启动 0.83s（其中加载≈0.78s）  路径 C:\Users\mikasa\Documents\DeepSeek Harness\ai-detect\models\ppl
+          就绪
+  [stylo] OK   文体计量  冷启动 0.00s（其中加载≈0.00s）  路径 -
+          就绪（无需模型）
+
+  torch 线程 8（AIDETECT_THREADS 可覆盖）
+
+== 三档文本实跑（逐单元分数与关键特征）
+
+  -- 120 字 / AI  ：2 段 -> 2 单元 / 正文 154 字
+     u00  103字 | clf=0.9999 ppl=8.72 top10=0.83 cv=0.25 conn=0.00 stylo=0.390
+     u01   51字 | clf=0.9999 ppl=11.18 top10=0.80 cv=0.00 conn=0.00 stylo=0.350
+     引擎：clf 0.10s  ppl 0.23s  stylo 0.000s
+     特征均值：clf_mean=0.9999 clf_max=0.9999 ppl=9.95 meanlprob=-2.290 top10=0.817 st_cv_slen=0.125
+     report：AI 率(字数) 91.2%  单元 P [0.9158, 0.9048]  阈值 0.60  耗时 0.09s
+     护栏：['正文仅 154 字，低于 300 字的可靠性下限，判定波动很大，建议补充文本后再测。', '当前未加载标定参数（calibration.json），分数来自启发式加权，仅可用于相对比较，不应作为正式结论；请先运行 python -m aidetect calibrate。']
+
+  -- 120 字 / 人类：1 段 -> 1 单元 / 正文 125 字
+     u00  125字 | clf=0.0000 ppl=20.17 top10=0.74 cv=0.54 conn=0.00 stylo=0.051
+     引擎：clf 0.07s  ppl 0.24s  stylo 0.000s
+     特征均值：clf_mean=0.0000 clf_max=0.0000 ppl=20.17 meanlprob=-3.004 top10=0.736 st_cv_slen=0.536
+     report：AI 率(字数) 13.4%  单元 P [0.1344]  阈值 0.60  耗时 0.00s
+     护栏：['正文仅 125 字，低于 300 字的可靠性下限，判定波动很大，建议补充文本后再测。', '当前未加载标定参数（calibration.json），分数来自启发式加权，仅可用于相对比较，不应作为正式结论；请先运行 python -m aidetect calibrate。']
+
+  -- 900 字 / AI  ：5 段 -> 5 单元 / 正文 932 字
+     u00  180字 | clf=0.9999 ppl=6.66 top10=0.86 cv=0.33 conn=0.00 stylo=0.366
+     u01  289字 | clf=0.9999 ppl=6.97 top10=0.88 cv=0.44 conn=0.00 stylo=0.209
+     u02  287字 | clf=0.9999 ppl=7.13 top10=0.89 cv=0.41 conn=0.00 stylo=0.196
+     u03  128字 | clf=0.9999 ppl=6.81 top10=0.87 cv=0.41 conn=0.00 stylo=0.245
+     u04   48字 | clf=0.9999 ppl=13.60 top10=0.74 cv=0.00 conn=0.00 stylo=0.350
+     引擎：clf 0.45s  ppl 1.87s  stylo 0.001s
+     特征均值：clf_mean=0.9999 clf_max=0.9999 ppl=8.23 meanlprob=-2.061 top10=0.849 st_cv_slen=0.317
+     report：AI 率(字数) 90.5%  单元 P [0.9182, 0.9018, 0.9002, 0.9058, 0.8962]  阈值 0.60  耗时 0.54s
+     护栏：['当前未加载标定参数（calibration.json），分数来自启发式加权，仅可用于相对比较，不应作为正式结论；请先运行 python -m aidetect calibrate。']
+
+  -- 900 字 / 人类：9 段 -> 8 单元 / 正文 908 字
+     u00  155字 | clf=0.0000 ppl=21.24 top10=0.73 cv=0.51 conn=0.00 stylo=0.078
+     u01  156字 | clf=0.0000 ppl=14.93 top10=0.74 cv=0.39 conn=0.00 stylo=0.170
+     u02  167字 | clf=0.0001 ppl=35.34 top10=0.64 cv=0.91 conn=0.00 stylo=0.050
+     u03  129字 | clf=0.0001 ppl=18.50 top10=0.73 cv=0.00 conn=0.00 stylo=0.362
+     u04  125字 | clf=0.0000 ppl=49.14 top10=0.61 cv=0.00 conn=2.40 stylo=0.606
+     u05   24字 | clf=0.0006 ppl=30.49 top10=0.70 cv=0.00 conn=0.00 stylo=0.350
+     u06  124字 | clf=0.0000 ppl=12.77 top10=0.79 cv=0.72 conn=0.81 stylo=0.376
+     u07   28字 | clf=0.0001 ppl=24.85 top10=0.70 cv=0.00 conn=3.57 stylo=0.600
+     引擎：clf 0.47s  ppl 1.29s  stylo 0.000s
+     特征均值：clf_mean=0.0001 clf_max=0.0001 ppl=25.91 meanlprob=-3.164 top10=0.705 st_cv_slen=0.315
+     report：AI 率(字数) 13.1%  单元 P [0.1309, 0.1728, 0.0482, 0.1748, 0.07, 0.1024, 0.202, 0.161]  阈值 0.60  耗时 0.01s
+     护栏：['当前未加载标定参数（calibration.json），分数来自启发式加权，仅可用于相对比较，不应作为正式结论；请先运行 python -m aidetect calibrate。']
+
+  -- 3000 字 / AI  ：11 段 -> 11 单元 / 正文 3010 字
+     u00  180字 | clf=0.9999 ppl=6.66 top10=0.86 cv=0.33 conn=0.00 stylo=0.366
+     u01  289字 | clf=0.9999 ppl=6.97 top10=0.88 cv=0.44 conn=0.00 stylo=0.209
+     u02  287字 | clf=0.9999 ppl=7.13 top10=0.89 cv=0.41 conn=0.00 stylo=0.196
+     u03  292字 | clf=0.9999 ppl=5.73 top10=0.90 cv=0.30 conn=0.34 stylo=0.451
+     u04  401字 | clf=0.9999 ppl=7.62 top10=0.82 cv=0.40 conn=1.00 stylo=0.497
+     u05  306字 | clf=0.9999 ppl=8.03 top10=0.85 cv=0.20 conn=0.33 stylo=0.504
+     u06  261字 | clf=0.9999 ppl=9.83 top10=0.80 cv=0.38 conn=0.00 stylo=0.276
+     u07  150字 | clf=0.9999 ppl=6.67 top10=0.86 cv=0.45 conn=0.00 stylo=0.128
+     u08  306字 | clf=0.9999 ppl=4.98 top10=0.91 cv=0.41 conn=0.33 stylo=0.330
+     u09  348字 | clf=0.9999 ppl=6.54 top10=0.86 cv=0.26 conn=0.29 stylo=0.471
+     u10  190字 | clf=0.9999 ppl=5.65 top10=0.89 cv=0.23 conn=0.00 stylo=0.453
+     引擎：clf 1.22s  ppl 3.81s  stylo 0.002s
+     特征均值：clf_mean=0.9999 clf_max=0.9999 ppl=6.89 meanlprob=-1.909 top10=0.866 st_cv_slen=0.347
+     report：AI 率(字数) 91.8%  单元 P [0.9182, 0.9018, 0.9002, 0.9285, 0.9292, 0.929, 0.9014, 0.8944, 0.9179, 0.9289, 0.9289]  阈值 0.60  耗时 1.08s
+     护栏：['当前未加载标定参数（calibration.json），分数来自启发式加权，仅可用于相对比较，不应作为正式结论；请先运行 python -m aidetect calibrate。']
+
+  -- 3000 字 / 人类：41 段 -> 26 单元 / 正文 2838 字
+     u00  155字 | clf=0.0000 ppl=21.24 top10=0.73 cv=0.51 conn=0.00 stylo=0.078
+     u01  156字 | clf=0.0000 ppl=14.93 top10=0.74 cv=0.39 conn=0.00 stylo=0.170
+     u02  167字 | clf=0.0001 ppl=35.34 top10=0.64 cv=0.91 conn=0.00 stylo=0.050
+     u03  129字 | clf=0.0001 ppl=18.50 top10=0.73 cv=0.00 conn=0.00 stylo=0.362
+     u04  125字 | clf=0.0000 ppl=49.14 top10=0.61 cv=0.00 conn=2.40 stylo=0.606
+     u05   24字 | clf=0.0006 ppl=30.49 top10=0.70 cv=0.00 conn=0.00 stylo=0.350
+     u06  124字 | clf=0.0000 ppl=12.77 top10=0.79 cv=0.72 conn=0.81 stylo=0.376
+     u07   28字 | clf=0.0001 ppl=24.85 top10=0.70 cv=0.00 conn=3.57 stylo=0.600
+     u08  139字 | clf=0.0000 ppl=14.63 top10=0.75 cv=0.96 conn=0.00 stylo=0.044
+     u09  131字 | clf=0.0000 ppl=14.30 top10=0.76 cv=0.54 conn=0.00 stylo=0.031
+     u10   42字 | clf=0.0001 ppl=54.08 top10=0.59 cv=0.00 conn=0.00 stylo=0.350
+     u11   94字 | clf=0.0001 ppl=20.33 top10=0.76 cv=0.15 conn=0.00 stylo=0.431
+     u12  192字 | clf=0.0018 ppl=10.99 top10=0.79 cv=0.30 conn=0.00 stylo=0.556
+     u13  147字 | clf=0.0002 ppl=19.26 top10=0.69 cv=0.00 conn=0.68 stylo=0.569
+     u14  128字 | clf=0.0001 ppl=11.33 top10=0.79 cv=0.38 conn=0.00 stylo=0.234
+     u15   53字 | clf=0.0003 ppl=13.74 top10=0.73 cv=0.40 conn=0.00 stylo=0.154
+     u16   52字 | clf=0.0001 ppl=47.86 top10=0.62 cv=0.81 conn=0.00 stylo=0.000
+     u17   30字 | clf=0.0001 ppl=112.94 top10=0.58 cv=0.00 conn=0.00 stylo=0.404
+     u18   32字 | clf=0.0001 ppl=76.11 top10=0.57 cv=0.00 conn=0.00 stylo=0.350
+     u19  151字 | clf=0.0000 ppl=26.12 top10=0.71 cv=0.62 conn=0.00 stylo=0.010
+     u20  198字 | clf=0.0000 ppl=21.98 top10=0.68 cv=0.93 conn=0.00 stylo=0.019
+     u21  176字 | clf=0.0009 ppl=11.47 top10=0.75 cv=1.04 conn=0.00 stylo=0.039
+     u22  129字 | clf=0.0000 ppl=17.92 top10=0.75 cv=0.58 conn=0.00 stylo=0.024
+     u23  129字 | clf=0.0000 ppl=20.95 top10=0.70 cv=0.00 conn=0.78 stylo=0.541
+     u24   81字 | clf=0.0001 ppl=9.15 top10=0.75 cv=0.06 conn=0.00 stylo=0.369
+     u25   26字 | clf=0.0009 ppl=14.19 top10=0.68 cv=0.00 conn=0.00 stylo=0.350
+     引擎：clf 1.23s  ppl 2.75s  stylo 0.001s
+     特征均值：clf_mean=0.0002 clf_max=0.0002 ppl=27.87 meanlprob=-3.099 top10=0.703 st_cv_slen=0.357
+     report：AI 率(字数) 14.8%  单元 P [0.1309, 0.1728, 0.0482, 0.1748, 0.07, 0.1024, 0.202, 0.161, 0.1614, 0.1616, 0.0402, 0.1716, 0.2273, 0.1915, 0.1928, 0.1762, 0.0109, 0.0404, 0.0354, 0.094, 0.1206, 0.1734, 0.144, 0.1789, 0.2127, 0.1945]  阈值 0.60  耗时 0.01s
+     护栏：['当前未加载标定参数（calibration.json），分数来自启发式加权，仅可用于相对比较，不应作为正式结论；请先运行 python -m aidetect calibrate。']
+
+== AI vs 人类 gap（同题 HC3 样本拼文本，clf 目标 gap ≥ 0.30）
+  档位   clf(AI)  clf(人)  clf_gap  ppl(AI)  ppl(人)  ppl差(人-AI)  top10(AI)  top10(人)  stylo_gap
+    120  0.9999   0.0000   +0.9999      9.95     20.17     +10.22     0.817      0.736    +0.3191
+    900  0.9999   0.0001   +0.9998      8.23     25.91     +17.67     0.849      0.705    -0.0508
+   3000  0.9999   0.0002   +0.9997      6.89     27.87     +20.98     0.866      0.703    +0.0810
+
+  验收 clf gap ≥ 0.30：通过
+
+== 吞吐：3000 字单次 report
+  文档 3010 字 / 11 单元 / clf 窗口 15 / ppl 窗口 19（缓存：冷）
+  判别模型      1.33s  每单元 0.121s  每字 0.44ms  每窗口 89ms
+  困惑度       5.41s  每单元 0.492s  每字 1.80ms  每窗口 285ms
+  文体统计      0.00s  每单元 0.000s  每字 0.00ms
+  引擎合计 6.74s；完整 report 8.49s（含句级证据 + 融合 + bootstrap）
+  冷机首次 report（磁盘冷加载≈5.10s + 报告 8.49s）：13.59s
+  同进程二次 report（页缓存热，加载 0.30s）：8.79s
+
+== 全量标定 wall-clock 预估
+  全量（dev+test）：31405 单元 / 5787813 字
+    预估 161.4 ~ 320.7 分钟（约 2.7 ~ 5.3 小时，中位 234.4 分钟）
+  快速版 --limit 300：4916 单元 / 889540 字
+    预估 24.8 ~ 50.2 分钟
+    [throughput_cold] 每单元 0.6127s、每字 2.239ms
+    [fixture_raw] 每单元 0.4579s、每字 1.673ms
+
+== 产物
+  C:\Users\mikasa\Documents\DeepSeek Harness\ai-detect\out\smoke.json
+  smoke 总耗时 56.6s
+
+SMOKE OK

@@ -1,0 +1,29 @@
+# 下载的资源（模型权重 + 评测语料，约 830MB）：不入库，用 `python -m aidetect fetch all` 下载
+# 下载地址见 README §二「资源下载地址」
+/models/
+/data/
+
+# 运行期临时产物（保留 out/ 下的评测证据与示例报告，它们被 README 引用）
+/out/_*
+/out/**/__pycache__/
+
+# 根目录日志（运行时生成）
+/*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# 测试缓存
+.pytest_cache/
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

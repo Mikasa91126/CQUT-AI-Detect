@@ -1,0 +1,110 @@
+[
+  {
+    "threads": null,
+    "repeat": 0,
+    "rc": 0,
+    "wall_sec": 16.79,
+    "internal_elapsed_sec": 15.31,
+    "engines": {
+      "clf": 8.84,
+      "ppl": 6.24,
+      "stylo": 0.0
+    },
+    "engine_notes": {
+      "clf": "AI 类 = ChatGPT；窗口 15 次推理",
+      "ppl": "GPT2-Chinese；100 次窗口推理",
+      "stylo": "纯统计特征，无需下载模型"
+    },
+    "ai_rate_chars": 0.1247
+  },
+  {
+    "threads": null,
+    "repeat": 1,
+    "rc": 0,
+    "wall_sec": 16.59,
+    "internal_elapsed_sec": 15.06,
+    "engines": {
+      "clf": 8.63,
+      "ppl": 6.19,
+      "stylo": 0.0
+    },
+    "engine_notes": {
+      "clf": "AI 类 = ChatGPT；窗口 15 次推理",
+      "ppl": "GPT2-Chinese；100 次窗口推理",
+      "stylo": "纯统计特征，无需下载模型"
+    },
+    "ai_rate_chars": 0.1247
+  },
+  {
+    "threads": 18,
+    "repeat": 0,
+    "rc": 0,
+    "wall_sec": 16.0,
+    "internal_elapsed_sec": 14.41,
+    "engines": {
+      "clf": 8.55,
+      "ppl": 5.65,
+      "stylo": 0.0
+    },
+    "engine_notes": {
+      "clf": "AI 类 = ChatGPT；窗口 15 次推理",
+      "ppl": "GPT2-Chinese；100 次窗口推理",
+      "stylo": "纯统计特征，无需下载模型"
+    },
+    "ai_rate_chars": 0.1247
+  },
+  {
+    "threads": 18,
+    "repeat": 1,
+    "rc": 0,
+    "wall_sec": 17.29,
+    "internal_elapsed_sec": 15.86,
+    "engines": {
+      "clf": 9.67,
+      "ppl": 5.98,
+      "stylo": 0.0
+    },
+    "engine_notes": {
+      "clf": "AI 类 = ChatGPT；窗口 15 次推理",
+      "ppl": "GPT2-Chinese；100 次窗口推理",
+      "stylo": "纯统计特征，无需下载模型"
+    },
+    "ai_rate_chars": 0.1247
+  },
+  {
+    "threads": 4,
+    "repeat": 0,
+    "rc": 0,
+    "wall_sec": 19.05,
+    "internal_elapsed_sec": 17.71,
+    "engines": {
+      "clf": 9.69,
+      "ppl": 7.68,
+      "stylo": 0.0
+    },
+    "engine_notes": {
+      "clf": "AI 类 = ChatGPT；窗口 15 次推理",
+      "ppl": "GPT2-Chinese；100 次窗口推理",
+      "stylo": "纯统计特征，无需下载模型"
+    },
+    "ai_rate_chars": 0.1247
+  },
+  {
+    "threads": 4,
+    "repeat": 1,
+    "rc": 0,
+    "wall_sec": 17.66,
+    "internal_elapsed_sec": 16.47,
+    "engines": {
+      "clf": 9.9,
+      "ppl": 6.32,
+      "stylo": 0.0
+    },
+    "engine_notes": {
+      "clf": "AI 类 = ChatGPT；窗口 15 次推理",
+      "ppl": "GPT2-Chinese；100 次窗口推理",
+      "stylo": "纯统计特征，无需下载模型"
+    },
+    "ai_rate_chars": 0.1247
+  }
+]
