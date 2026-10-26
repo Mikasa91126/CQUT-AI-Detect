@@ -147,7 +147,7 @@
       "available": true,
       "note": "AI 类 = ChatGPT；窗口 15 次推理",
       "mean_score": 0.1033,
-      "elapsed_sec": 14.65
+      "elapsed_sec": 7.0
     },
     {
       "name": "ppl",
@@ -155,7 +155,7 @@
       "available": true,
       "note": "GPT2-Chinese；100 次窗口推理",
       "mean_score": 0.7876,
-      "elapsed_sec": 7.58
+      "elapsed_sec": 4.24
     },
     {
       "name": "stylo",
@@ -367,5 +367,5 @@
       "para": 1
     }
   ],
-  "elapsed_sec": 22.52
+  "elapsed_sec": 11.41
 }
