@@ -548,7 +548,7 @@ python -m aidetect calibrate --limit 300
 
 ## 十一、许可、致谢与相关文档
 
-- 本项目代码以 **MIT** 许可发布（全文见仓库根目录 [LICENSE](LICENSE)，`pyproject.toml` 同步声明）。第三方模型与语料**不随本仓库分发**，由 `python -m aidetect fetch` 在用户本机下载，其许可与引用要求独立于本项目的 MIT 许可。
+- 本项目代码以 **MIT** 许可发布（全文见仓库根目录 [LICENSE](LICENSE)，`pyproject.toml` 同步声明）。第三方模型与语料的来源、许可与体积集中列在 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)：它们**不随本仓库分发**，由 `python -m aidetect fetch` 在用户本机下载，其许可与引用要求独立于本项目的 MIT 许可。
 - 模型权重按各自 Hugging Face 仓库声明的许可使用（使用前请以模型卡片为准）：
   - `Hello-SimpleAI/chatgpt-detector-roberta-chinese`
   - `uer/gpt2-chinese-cluecorpussmall`
