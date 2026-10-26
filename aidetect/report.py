@@ -437,6 +437,43 @@ def _cut_txt(value: float) -> str:
     return f"{value:.3f}"
 
 
+def _prob_txt(p: float) -> str:
+    """段落/句级概率文案：标定后分数常只有万分之几，固定两位会压成 0.00。"""
+    if p >= 0.1:
+        return f"{p:.2f}"
+    if p >= 0.01:
+        return f"{p:.3f}"
+    if p >= 0.0001:
+        return f"{p:.4f}"
+    return "<0.0001"
+
+
+def _prob_pct(p: float) -> str:
+    """柱状图柱顶标签：用百分比表示极小的概率，避免一排 0.00。"""
+    x = p * 100
+    if x >= 1:
+        return f"{x:.1f}%"
+    if x >= 0.01:
+        return f"{x:.2f}%"
+    return "<0.01%"
+
+
+def _rate_num(rate: float) -> str:
+    """整篇 AI 率的数字部分（不带 %），极小值不四舍五入成 0.0。"""
+    x = rate * 100
+    if x >= 0.1:
+        return f"{x:.1f}"
+    if x >= 0.001:
+        return f"{x:.2f}"
+    if x > 0:
+        return f"{x:.3f}"
+    return "0.00"
+
+
+def _rate_txt(rate: float) -> str:
+    return f"{_rate_num(rate)}%"
+
+
 def _gauge(rate: float, threshold: float, risk: str) -> str:
     """环形量表：进度环 = AI 率，刻度 = 判定阈值，颜色随风险档变化。"""
     size, center, radius, width = 236, 118, 92, 13
@@ -457,7 +494,7 @@ def _gauge(rate: float, threshold: float, risk: str) -> str:
             f'y2="{center + (radius + 8) * math.sin(a):.1f}" '
             f'stroke="var(--line-2)" stroke-width="1.5" stroke-linecap="round"/>')
     return f"""<div class="gauge">
-  <svg viewBox="0 0 {size} {size}" role="img" aria-label="AI 生成占比 {rate*100:.1f}%，判定阈值 {threshold*100:.2f}%">
+  <svg viewBox="0 0 {size} {size}" role="img" aria-label="AI 生成占比 {_rate_txt(rate)}，判定阈值 {threshold*100:.2f}%">
     <circle cx="{center}" cy="{center}" r="{radius}" fill="none" stroke="var(--gauge-track)" stroke-width="{width}"/>
     <circle cx="{center}" cy="{center}" r="{radius}" fill="none" stroke="{color}" stroke-width="{width}"
       stroke-linecap="round" stroke-dasharray="{dash:.2f} {circ:.2f}" transform="rotate(-90 {center} {center})"/>
@@ -466,7 +503,7 @@ def _gauge(rate: float, threshold: float, risk: str) -> str:
       stroke-linecap="round"/>
   </svg>
   <div class="gauge-center">
-    <div class="gauge-num">{rate*100:.1f}<small>%</small></div>
+    <div class="gauge-num">{_rate_num(rate)}<small>%</small></div>
     <div class="gauge-cap">AI 生成占比</div>
   </div>
 </div>"""
@@ -553,11 +590,11 @@ def _distribution_chart(analysis: Analysis) -> str:
         label = _unit_label(us)
         parts.append(
             f'<rect x="{x:.1f}" y="{y:.1f}" width="{bar_w:.1f}" height="{bar_h:.1f}" rx="2.5" '
-            f'fill="{color}"><title>{label} · P(AI)={us.p:.3f} · '
+            f'fill="{color}"><title>{label} · P(AI)={_prob_txt(us.p)} · '
             f'{GRADE_LABEL.get(us.grade, us.grade)} · {us.unit.chars} 字</title></rect>')
         if show_vals:
             parts.append(f'<text class="vlabel" x="{x + bar_w / 2:.1f}" y="{y - 6:.1f}" '
-                         f'text-anchor="middle">{us.p:.2f}</text>')
+                         f'text-anchor="middle">{_prob_pct(us.p)}</text>')
         if i % step == 0 or i == n - 1:
             parts.append(f'<text x="{x + bar_w/2:.1f}" y="{top + plot_h + 17:.1f}" '
                          f'text-anchor="middle">{_unit_label(us).replace("第 ", "").replace(" 段", "")}</text>')
@@ -576,7 +613,7 @@ def _top_paragraphs(analysis: Analysis, limit: int = 3) -> str:
     for r in picks:
         items.append(
             f'<li><a href="#p{r.index + 1}">第 {r.index + 1} 段</a>'
-            f'<b>{r.p:.2f}</b>'
+            f'<b>{_prob_txt(r.p)}</b>'
             f'<span class="tag">{GRADE_LABEL.get(r.grade, r.grade)} · {r.chars} 字 · '
             f'{_esc(r.text[:26])}…</span></li>')
     return f'<div class="tops"><h3>优先自查</h3><ol>{"".join(items)}</ol></div>'
@@ -616,7 +653,7 @@ def _para_rows(analysis: Analysis) -> str:
             f"<td class='num pnum'>{r.index + 1}</td>"
             f"<td>{kind}{merged}</td>"
             f"<td class='num'>{r.chars}</td>"
-            f"<td class='num heat'><span class='pv'>{r.p:.2f}</span>"
+            f"<td class='num heat'><span class='pv'>{_prob_txt(r.p)}</span>"
             f"<span class='hbar'><i style='width:{p*100:.1f}%;background:{heat}'></i></span></td>"
             f"<td><span class='g {r.grade}'>{GRADE_LABEL.get(r.grade, r.grade)}</span></td>"
             f"<td class='cell-text'>{_esc(r.text[:90])}"
@@ -668,7 +705,7 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
     rk = risk_key(rate, analysis.threshold)
     title, desc = RISK[rk]
     ci = analysis.ai_rate_ci
-    ci_txt = (f"{_pct(ci[0])} – {_pct(ci[1])}" if ci else "样本段数太少，无法给出区间")
+    ci_txt = (f"{_rate_txt(ci[0])} – {_rate_txt(ci[1])}" if ci else "样本段数太少，无法给出区间")
     generated_at = generated_at or time.strftime("%Y-%m-%d %H:%M:%S")
     calib = analysis.recipe
     cuts = _grade_cutoffs(analysis)
@@ -680,6 +717,19 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
     ps = [us.p for us in analysis.unit_scores]
     spread = (sum((p - sum(ps) / len(ps)) ** 2 for p in ps) / len(ps)) ** 0.5 if len(ps) > 1 else 0.0
     spread_txt = "低" if spread < 0.15 else ("中" if spread < 0.3 else "高")
+
+    scored = [r for r in analysis.paragraphs if r.p is not None]
+    max_p = max((r.p for r in scored), default=0.0)
+    below_n = sum(1 for r in scored if r.p < analysis.threshold)
+    low_signal = ""
+    if scored and max_p < analysis.threshold:
+        low_signal = (
+            f"<div class='ok'>{_ICON_CHECK}<div><b>全部 {len(scored)} 段都低于判定阈值"
+            f"（{analysis.threshold*100:.2f}%），最高的一段 P(AI) = {_prob_txt(max_p)}。</b>"
+            "这不是四舍五入凑出来的 0，而是模型确实给得很低，整篇更接近人工写作。"
+            "但方向要理解对：<b>分数低 ≠ 一定没用 AI</b> —— 检测器对「AI 生成后再大改」"
+            "「较新模型的输出」漏检率明显更高。若你怀疑某几段，单独把那几段复制成小文档再测一次，"
+            "比看整篇百分比更可靠。</div></div>")
 
     warns = "".join(
         f"<div class='warn'>{_ICON_ALERT}<div>{_esc(w)}</div></div>" for w in analysis.warnings)
@@ -713,7 +763,7 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
 <div class="stickybar noprint" id="stickybar">
   <div class="inner">
     <span>{_esc(name)}</span>
-    <b class="num">{rate*100:.1f}%</b>
+    <b class="num">{_rate_txt(rate)}</b>
     <span class="risk pill {rk}">{_esc(title.replace('结论：', ''))}</span>
     <span>模式 {_esc(analysis.mode)} · 阈值 {analysis.threshold*100:.2f}%</span>
   </div>
@@ -732,7 +782,7 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
   <div class="titles">
     <div class="eyebrow">Detection report</div>
     <h1>AI 生成率检测报告</h1>
-    <p class="subtitle">{_esc(title.replace('结论：', ''))}。整篇 AI 生成占比 <b>{rate*100:.1f}%</b>
+    <p class="subtitle">{_esc(title.replace('结论：', ''))}。整篇 AI 生成占比 <b>{_rate_txt(rate)}</b>
       （95% 置信区间 {ci_txt}），{ai_paras}/{units} 段被判为 AI；建议按「逐段明细」
       定位可疑段落并用你自己的表达改写。</p>
   </div>
@@ -754,12 +804,15 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
     <div class="verdict-body">
       <p>{_esc(desc)}</p>
       <div class="statgrid">
-        <div class="stat"><b>{analysis.ai_rate_paras*100:.0f}<small>%</small></b><span>AI 段落占比（{ai_paras}/{units} 段）</span></div>
+        <div class="stat"><b>{_rate_txt(analysis.ai_rate_paras)}</b><span>AI 段落占比（{ai_paras}/{units} 段）</span></div>
         <div class="stat"><b>{high_n}<small> 段</small></b><span>极高风险段</span></div>
         <div class="stat"><b>{mid_high_n}<small> 段</small></b><span>偏高风险段</span></div>
         <div class="stat"><b>{spread:.2f}</b><span>段落分歧（标准差·{spread_txt}）</span></div>
         <div class="stat"><b>{st.get('excluded_chars', 0)}<small> 字</small></b><span>已剔除（参考文献等）</span></div>
+        <div class="stat"><b>{_prob_txt(max_p)}</b><span>最高段 P(AI)</span></div>
+        <div class="stat"><b>{below_n}<small> 段</small></b><span>低于判定阈值</span></div>
       </div>
+      {low_signal}
       {_range_bar(rate, ci, analysis.threshold)}
       {_grade_bar(analysis)}
       {_top_paragraphs(analysis)}

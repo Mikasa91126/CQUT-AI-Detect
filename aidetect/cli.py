@@ -38,20 +38,32 @@ def _load_doc(source: str):
     return build_doc(text, name)
 
 
+def _rate_txt(rate: float) -> str:
+    """标定后的 AI 率可能只有万分之几，不能一律四舍五入成 0.0%。"""
+    x = rate * 100
+    if x >= 0.1:
+        return f"{x:.1f}%"
+    if x >= 0.001:
+        return f"{x:.2f}%"
+    if x > 0:
+        return f"{x:.3f}%"
+    return "0.00%"
+
+
 def _print_summary(analysis, html_path: Path | None, json_path: Path | None) -> None:
     st = analysis.stats
     rate = analysis.ai_rate_chars
     ci = analysis.ai_rate_ci
-    ci_txt = f"{ci[0]*100:.1f}%–{ci[1]*100:.1f}%" if ci else "样本不足"
+    ci_txt = f"{_rate_txt(ci[0])}–{_rate_txt(ci[1])}" if ci else "样本不足"
     print(f"\n文档：{st.get('name')}  正文 {st.get('body_chars')} 字 / {st.get('units')} 段 "
           f"（剔除 {st.get('excluded_chars', 0)} 字）")
     for e in analysis.engine_info:
         state = "✓" if e["available"] else "✗"
         print(f"引擎 {state} {e['label']}" + (f"  {e['note']}" if e["note"] else ""))
-    print(f"\nAI 生成占比（字数口径）：{rate*100:.1f}%   95% CI {ci_txt}")
+    print(f"\nAI 生成占比（字数口径）：{_rate_txt(rate)}   95% CI {ci_txt}")
     judged = analysis.grade_counts.get("high", 0) + analysis.grade_counts.get("mid_high", 0)
-    print(f"AI 段落占比：{analysis.ai_rate_paras*100:.0f}%（{judged}/{st.get('units')} 段判为 AI）"
-          f"   模式 {analysis.mode} / 阈值 {analysis.threshold:.2f}")
+    print(f"AI 段落占比：{_rate_txt(analysis.ai_rate_paras)}（{judged}/{st.get('units')} 段判为 AI）"
+          f"   模式 {analysis.mode} / 阈值 {analysis.threshold*100:.2f}%")
     if analysis.warnings:
         print("\n护栏提示：")
         for w in analysis.warnings:
