@@ -37,3 +37,11 @@ def test_run_warns_without_calibration(monkeypatch, capsys):
     _stub(monkeypatch, calibration=False)
     assert doctor.run() == 1
     assert "自检发现缺失项" in capsys.readouterr().out
+
+
+def test_symbols_fall_back_on_gbk_console():
+    """GBK 装不下 ✓/✗：符号要退化成 ASCII，不能让自检崩在打印上。"""
+    assert doctor.symbols_for("gbk") == ("[OK]", "[!]", "[X]")
+    assert doctor.symbols_for("cp936") == ("[OK]", "[!]", "[X]")
+    assert doctor.symbols_for("utf-8") == ("✓", "!", "✗")
+    assert doctor.symbols_for(None) == ("✓", "!", "✗")

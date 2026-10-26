@@ -3,7 +3,7 @@
 **纯本地、离线、可解释的中文「AI 生成率」自查工具。** 判别器 + 困惑度 + 文体统计三引擎融合打分，输出整篇 AI 率（含 95% 置信区间）与段落级证据，并生成一份可离线打开的单文件 HTML 报告。
 
 - 版本 1.0.0 ｜ Python ≥ 3.10 ｜ 纯 CPU 可跑 ｜ 除首次下载资源外零网络
-- 交付形态：命令行（`python -m aidetect ...`，安装后也可直接用 `aidetect`）+ 单文件 HTML 报告 + 机器可读 JSON
+- 交付形态：命令行（`python -m aidetect ...`，安装后也可直接用 `aidetect`）+ 单文件 HTML 报告 + 机器可读 JSON；不想敲命令时双击 `启动检测.bat`，把文档拖进窗口即可（见§二「不想敲命令？用启动器」）。
 
 > **定位一句话**：这是一个**写作自查工具**，不是检测判决系统。它回答的是「哪几段像 AI、为什么、这个百分比的不确定性有多大」，而不是「你有没有学术不端」。
 
@@ -84,7 +84,25 @@ python -m aidetect report 你的论文.docx --open
 - 每个子命令都支持 `--help`（如 `python -m aidetect fetch --help`）；`fetch` 另可用 `--workers` / `--chunk-mb` / `--retries` 调整下载并发、分片大小与重试次数（默认 8 / 16 / 200）。
 - `--open` 仅在 Windows 下调用系统默认浏览器；其他平台会静默跳过，手动打开生成的 HTML 即可。
 
+### 不想敲命令？用启动器（双击 / 拖拽）
+
+资源下载好之后（`python -m aidetect fetch all`），日常检测可以完全不碰命令行：
+
+1. 双击项目根目录的 **`启动检测.bat`**（等价于 `python -m aidetect launch`），打开一个交互窗口；
+2. 把 `.docx` / `.pdf` / `.txt` / `.md` 文件**拖进这个窗口**，按回车；
+3. 也可以把文件直接**拖到 `启动检测.bat` 的图标上**，或一次拖多个 / 拖一个文件夹（文件夹会展开成其中的所有文档）。
+
+窗口里可以：
+
+- 输入 `1` / `2` / `3` 切换 `balanced` / `strict` / `lenient` 三档严格程度（切换后对本会话后续文档生效）；
+- 模型只在第一次检测时加载一次，同一窗口里连续检测多篇不会重复等这 10 秒左右；
+- 报告生成后自动用默认浏览器打开（`AIDETECT_NO_OPEN=1` 可关掉），HTML/JSON 落在 `out/`；
+- 输入 `h` 看帮助，`q`、`exit` 或直接回车退出。
+
+想放到桌面：右键 `启动检测.bat` → **发送到 → 桌面快捷方式**（可重命名成「AI 生成率检测」），之后双击桌面图标即可；把文档拖到这个快捷方式上同样能检测。启动器在缺模型 / 缺依赖时会直接提示该跑的 `doctor`、`fetch` 命令，不会闪退（窗口会停住等你按任意键）。
+
 ### 资源下载地址（大文件不随仓库分发）
+
 
 本仓库只包含代码、文档、测试与评测证据。两个模型权重与评测语料合计约 **812 MB**，**不入库**，请用 `python -m aidetect fetch all` 下载（唯一联网命令，多连接断点续传，失败自动回退 `hf-mirror.com`）。若 Q 网不好想手动下，按下面的上游地址取文件、按「放置位置」放好后用 `python -m aidetect doctor` 校验即可（`fetch` 也会跳过已存在且大小正确的文件）。
 
@@ -108,6 +126,7 @@ python -m aidetect report 你的论文.docx --open
 | `python -m aidetect calibrate [--limit N]` | 用 HC3-Chinese 拟合融合参数，产出标定文件与 `eval/report.md` |
 | `python -m aidetect bench [--limit N]` | 不重新拟合，用现有 `calibration.json` 复评；`--limit N` 复现与 `calibrate --limit N` 相同的 test 子集（本机 `--limit 150` 实测复评 1417 个 test 单元、约 566 秒；与标定时指标最大绝对差 0.0032，属阈值边界敏感差异，见 `eval/report.md`）；无标定文件时退出码 3 |
 | `python -m aidetect report <文件> [...]` | 检测文档，产出 HTML + JSON 报告 |
+| `python -m aidetect launch [文件...]` | 交互式启动器：拖文件进来即可检测；也是 `启动检测.bat` 调用的入口 |
 | `python -m aidetect json <文件> [--out 路径]` | 只输出 JSON（便于脚本化 / 批量） |
 | `python -m aidetect --version` | 打印版本号 |
 
@@ -462,6 +481,7 @@ ai-detect/
 │  ├─ aggregate.py           # 文档级汇总：两口径、bootstrap CI、可疑句、护栏
 │  ├─ report.py              # 单文件 HTML 报告
 │  ├─ doctor.py              # 自检
+│  ├─ launch.py              # 双击/拖拽启动器（aidetect launch）
 │  ├─ calibrate.py           # 标定 + 域外评测（产出 eval/report.md）
 │  └─ resources/             # calibration.json（由 calibrate 生成）
 ├─ models/                   # fetch 下载的模型权重（clf/、ppl/）
@@ -470,6 +490,7 @@ ai-detect/
 ├─ out/                      # 检测报告输出（html/json）；开发调试产物也落这里
 ├─ tests/                    # 离线单测（不加载真实模型、不联网）
 ├─ tools/                    # 开发脚本（smoke / e2e 等，不属于安装包）
+├─ 启动检测.bat               # 双击启动的入口（交互窗口 / 拖拽检测）
 ├─ pyproject.toml
 └─ README.md
 ```
@@ -518,7 +539,8 @@ ai-detect/
 
 - 先跑 `python -m aidetect doctor`，按提示补齐；退出码含义见[退出码](#退出码)。
 - 看完整堆栈：设 `AIDETECT_DEBUG=1` 后重跑。
-- 终端中文乱码多是控制台编码问题：PowerShell 下先执行 `$env:PYTHONIOENCODING='utf-8'`；输出文件本身始终是 UTF-8。
+- 终端中文乱码多是控制台编码问题：PowerShell 下先执行 `$env:PYTHONIOENCODING='utf-8'`；`启动检测.bat` 已自动执行 `chcp 65001` 并设置 `PYTHONUTF8=1`，双击使用不会乱码。输出文件本身始终是 UTF-8。
+- 老式 GBK 控制台装不下的符号（`✓` / `✗`）会自动降级成 `[OK]` / `[!]` / `[X]` 或 `?`，不会因此报内部错误。
 
 ## 十、开发、测试与复现
 

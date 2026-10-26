@@ -1,7 +1,9 @@
 """命令行：参数解析、退出码、报告落盘路径。"""
 from __future__ import annotations
 
+import io
 import json
+import sys
 
 import pytest
 
@@ -92,3 +94,18 @@ def test_bench_parser_accepts_limit():
     ns = parser.parse_args(["bench", "--limit", "150"])
     assert ns.limit == 150
     assert cli.build_parser().parse_args(["bench"]).limit is None
+
+
+def test_launch_parser_accepts_files():
+    parser = cli.build_parser()
+    assert parser.parse_args(["launch", "a.docx", "b.pdf"]).files == ["a.docx", "b.pdf"]
+    assert parser.parse_args(["launch"]).files == []
+
+
+def test_main_tolerates_gbk_console(monkeypatch):
+    """Windows 传统 GBK 控制台装不下 ✓/✗：要降级成可替换字符，而不是内部错误 rc=4。"""
+    stdout = io.TextIOWrapper(io.BytesIO(), encoding="gbk", errors="strict")
+    stderr = io.TextIOWrapper(io.BytesIO(), encoding="gbk", errors="strict")
+    monkeypatch.setattr(sys, "stdout", stdout)
+    monkeypatch.setattr(sys, "stderr", stderr)
+    assert cli.main(["doctor"]) in (0, 1)

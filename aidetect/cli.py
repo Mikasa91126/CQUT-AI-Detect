@@ -187,6 +187,12 @@ def cmd_bench(args: argparse.Namespace) -> int:
     return EXIT_OK
 
 
+def cmd_launch(args: argparse.Namespace) -> int:
+    from . import launch
+
+    return launch.main(list(getattr(args, "files", []) or []))
+
+
 # --------------------------------------------------------------------------- 入口
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
@@ -241,10 +247,27 @@ def build_parser() -> argparse.ArgumentParser:
     b.add_argument("--limit", type=int, default=None,
                    help="与 calibrate 相同的抽样上限（复现同一测试子集；默认全量，很慢）")
     b.set_defaults(func=cmd_bench)
+
+    la = sub.add_parser("launch", help="交互式启动器：拖文件进来即可检测（双击 .bat 用的就是它）")
+    la.add_argument("files", nargs="*", help="要检测的文件或文件夹（留空进入交互窗口）")
+    la.set_defaults(func=cmd_launch)
     return p
 
 
+def _tolerant_console() -> None:
+    """输出编码装不下某个字符（Windows 传统 GBK 控制台 / 重定向到文件）时用 ? 代替，而不是抛异常。"""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(errors="replace")
+        except (ValueError, OSError):  # pragma: no cover - 个别流不支持
+            continue
+
+
 def main(argv: list[str] | None = None) -> int:
+    _tolerant_console()
     args = build_parser().parse_args(argv)
     try:
         return int(args.func(args))

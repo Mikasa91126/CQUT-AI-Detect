@@ -13,7 +13,18 @@ import sys
 
 from . import __version__, config, fusion
 
-OK, WARN, BAD = "✓", "!", "✗"
+
+def symbols_for(encoding: str | None) -> tuple[str, str, str]:
+    """按输出编码挑符号：老式 GBK 控制台装不下 ✓/✗，退化为 ASCII，避免自检崩在打印上。"""
+    enc = encoding or "utf-8"
+    try:
+        "✓✗".encode(enc)
+    except (UnicodeEncodeError, LookupError):
+        return ("[OK]", "[!]", "[X]")
+    return ("✓", "!", "✗")
+
+
+OK, WARN, BAD = symbols_for(getattr(sys.stdout, "encoding", None))
 
 
 def _row(flag: str, title: str, detail: str = "") -> str:
