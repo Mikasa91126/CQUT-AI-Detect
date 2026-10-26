@@ -6,6 +6,10 @@
 # 运行期临时产物（保留 out/ 下的评测证据与示例报告，它们被 README 引用）
 /out/_*
 /out/**/__pycache__/
+# 用户自己检测的文档产物：不入库（避免把私人稿件推到公开仓库）
+/out/*_report.html
+/out/*_report.json
+/out/*_report.docx
 
 # 根目录日志（运行时生成）
 /*.log
