@@ -55,8 +55,9 @@ class FakeEngine:
         return [float(self.value)] * len(sents)
 
 
-def fake_engines(clf=0.9, ppl=0.1, stylo=0.1):
-    return [
+def fake_engines(clf=0.9, ppl=0.1, stylo=0.1, cmj=None):
+    """cmj=None 表示本机没有 v2 判别器（疑似轨道退化为融合分）。"""
+    engines = [
         FakeEngine("clf", "判别器", True, clf,
                    {"clf_mean": clf, "clf_max": clf, "clf_std": 0.05,
                     "meanlprob": -2.0, "burst": 0.5, "top10": 0.3}),
@@ -66,11 +67,17 @@ def fake_engines(clf=0.9, ppl=0.1, stylo=0.1):
                    {"st_cv_slen": 0.3, "st_conn100": 2.0, "st_tmpl100": 1.0,
                     "st_repeat3": 0.1, "st_nsent": 10}),
     ]
+    if cmj is not None:
+        engines.insert(1, FakeEngine("cmj", "判别器 v2", True, cmj,
+                                     {"cmj_mean": cmj, "cmj_max": cmj, "cmj_std": 0.05,
+                                      "meanlprob": -2.0, "burst": 0.5, "top10": 0.3}))
+    return engines
 
 
-def fake_results(n=4, clf=0.9, ppl=0.1, stylo=0.1):
+def fake_results(n=4, clf=0.9, ppl=0.1, stylo=0.1, cmj=None):
     """融合层要的是 EngineResult 列表，不是引擎对象。"""
-    return [e.score([None] * n) for e in fake_engines(clf=clf, ppl=ppl, stylo=stylo)]
+    return [e.score([None] * n)
+            for e in fake_engines(clf=clf, ppl=ppl, stylo=stylo, cmj=cmj)]
 
 
 def make_doc(paras: int = 4, text: str = AI_PARA, name: str = "test.txt"):

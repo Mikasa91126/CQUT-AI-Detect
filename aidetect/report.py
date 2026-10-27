@@ -369,14 +369,15 @@ JS = """
 """
 
 RISK = {
-    "low": ("结论：AI 生成痕迹不明显", "AI 生成占比低于当前判定阈值的一半，文本整体更像人工写作。"),
+    "low": ("结论：AI 生成痕迹不明显",
+            "疑似 AI 占比低于 20%：即使最敏感的判别器也只对少数段落给出偏 AI 的分数，整篇更像人工写作。"),
     "mid": ("结论：存在少量 AI 特征",
-            "AI 生成占比低于判定阈值但并非接近 0，可能有局部段落由模型辅助或经过润色。"),
+            "疑似 AI 占比在 20%–40%：可能有局部段落由模型辅助生成、或经过润色与改写。"),
     "mid_high": ("结论：AI 特征明显，建议逐段自查",
-                 "AI 生成占比已过判定阈值，建议按逐段表定位可疑段落并改写。"),
+                 "疑似 AI 占比在 40%–60%：多个段落被判为 AI，建议按逐段表定位后改写。"),
     "high": ("结论：AI 特征强，风险高",
-             "AI 生成占比显著高于阈值，多个段落被判为 AI 生成。建议按逐段明细找到"
-             "「极高」段落，逐段核对后用自己的表达改写，再重跑对比。"),
+             "疑似 AI 占比超过 60%：大部分文字落在疑似 AI 段落里。建议按逐段明细找到最高分段，"
+             "逐段核对后用自己的表达改写，再重跑对比。"),
 }
 GRADE_LABEL = {"high": "极高", "mid_high": "偏高", "mid": "中等", "low": "低", "excluded": "未纳入"}
 KIND_LABEL = {"body": "正文", "heading": "标题", "meta": "元信息"}
@@ -404,11 +405,12 @@ def _esc(text: str) -> str:
 
 
 def risk_key(rate: float, threshold: float) -> str:
-    if rate >= threshold * 1.25:
+    """兼容旧接口：按「疑似占比 vs 分级线」给出风险档。"""
+    if rate >= max(threshold, 0.60):
         return "high"
-    if rate >= threshold:
+    if rate >= max(threshold * 0.5, 0.40):
         return "mid_high"
-    if rate >= threshold * 0.5:
+    if rate >= 0.20:
         return "mid"
     return "low"
 
@@ -475,7 +477,7 @@ def _rate_txt(rate: float) -> str:
 
 
 def _gauge(rate: float, threshold: float, risk: str) -> str:
-    """环形量表：进度环 = AI 率，刻度 = 判定阈值，颜色随风险档变化。"""
+    """环形量表：进度环 = 疑似 AI 占比，刻度 = 高风险线（60%），颜色随风险档变化。"""
     size, center, radius, width = 236, 118, 92, 13
     circ = 2 * math.pi * radius
     dash = max(0.0, min(1.0, rate)) * circ
@@ -494,7 +496,7 @@ def _gauge(rate: float, threshold: float, risk: str) -> str:
             f'y2="{center + (radius + 8) * math.sin(a):.1f}" '
             f'stroke="var(--line-2)" stroke-width="1.5" stroke-linecap="round"/>')
     return f"""<div class="gauge">
-  <svg viewBox="0 0 {size} {size}" role="img" aria-label="AI 生成占比 {_rate_txt(rate)}，判定阈值 {threshold*100:.2f}%">
+  <svg viewBox="0 0 {size} {size}" role="img" aria-label="疑似 AI 占比 {_rate_txt(rate)}，高风险线 {threshold*100:.0f}%">
     <circle cx="{center}" cy="{center}" r="{radius}" fill="none" stroke="var(--gauge-track)" stroke-width="{width}"/>
     <circle cx="{center}" cy="{center}" r="{radius}" fill="none" stroke="{color}" stroke-width="{width}"
       stroke-linecap="round" stroke-dasharray="{dash:.2f} {circ:.2f}" transform="rotate(-90 {center} {center})"/>
@@ -504,31 +506,31 @@ def _gauge(rate: float, threshold: float, risk: str) -> str:
   </svg>
   <div class="gauge-center">
     <div class="gauge-num">{_rate_num(rate)}<small>%</small></div>
-    <div class="gauge-cap">AI 生成占比</div>
+    <div class="gauge-cap">疑似 AI 占比</div>
   </div>
 </div>"""
 
 
 def _range_bar(rate: float, ci, threshold: float) -> str:
-    """0–100% 轨道：区间带 + 当前值圆点 + 阈值刻度线。"""
+    """0–100% 轨道：区间带 + 当前值圆点 + 高风险线刻度。"""
     lo, hi = (ci if ci else (rate, rate))
     lo_pct = max(0.0, min(100.0, lo * 100))
     hi_pct = max(0.0, min(100.0, hi * 100))
     width = max(hi_pct - lo_pct, 0.8)
     thr_pct = max(0.0, min(100.0, threshold * 100))
     return f"""<div class="range">
-  <div class="range-head"><span>置信区间与阈值</span><span>0 — 100%</span></div>
+  <div class="range-head"><span>置信区间与高风险线</span><span>0 — 100%</span></div>
   <div class="range-track">
     <span class="range-band" style="left:{lo_pct:.1f}%;width:{width:.1f}%"></span>
     <span class="range-thr" style="left:{thr_pct:.1f}%"></span>
     <span class="range-dot" style="left:{max(0.6, min(99.4, rate*100)):.1f}%"></span>
   </div>
-  <div class="range-foot">圆点 = 本次 AI 率；竖线 = 判定阈值 {threshold*100:.2f}%；阴影带 = 95% 置信区间（段落级 bootstrap）。</div>
+  <div class="range-foot">圆点 = 本次疑似 AI 占比；竖线 = 高风险线 {threshold*100:.0f}%；阴影带 = 95% 置信区间（段落级 bootstrap）。</div>
 </div>"""
 
 
 def _grade_bar(analysis: Analysis) -> str:
-    counts = analysis.grade_counts or {}
+    counts = analysis.grade_counts_suspect or analysis.grade_counts or {}
     order = [("high", "极高"), ("mid_high", "偏高"), ("mid", "中等"), ("low", "低")]
     total = sum(counts.get(k, 0) for k, _ in order) or 1
     segs, chips = [], []
@@ -555,7 +557,7 @@ def _unit_label(us: UnitScore) -> str:
 
 
 def _distribution_chart(analysis: Analysis) -> str:
-    """单元概率分布柱状图：带坐标轴、阈值线、段号；柱高 = P(AI)，颜色 = 等级。"""
+    """单元分布柱状图：带坐标轴、疑似线、段号；柱高 = 疑似度（v2 判别器），颜色 = 等级。"""
     scores = analysis.unit_scores
     if not scores:
         return '<p class="empty">没有可展示的段落（正文为空或全部被剔除）。</p>'
@@ -567,34 +569,35 @@ def _distribution_chart(analysis: Analysis) -> str:
     slot = plot_w / n
     bar_w = min(58.0, max(3.0, slot * 0.62))
     show_vals = n <= 24
+    thr = float(getattr(analysis, "suspect_threshold", 0.5) or 0.5)
     parts = [f'<svg class="chart" viewBox="0 0 {width} {height}" role="img" '
-             f'aria-label="各段落 AI 概率分布柱状图，共 {n} 段">']
+             f'aria-label="各段落疑似度分布柱状图，共 {n} 段">']
     for frac in (0.0, 0.25, 0.5, 0.75, 1.0):
         y = top + plot_h * (1 - frac)
         parts.append(f'<line class="grid" x1="{left}" y1="{y:.1f}" x2="{width - right}" y2="{y:.1f}"/>')
         parts.append(f'<text x="{left - 9}" y="{y + 3.5:.1f}" text-anchor="end">{frac*100:.0f}%</text>')
-    thr_y = top + plot_h * (1 - max(0.0, min(1.0, analysis.threshold)))
+    thr_y = top + plot_h * (1 - max(0.0, min(1.0, thr)))
     thr_label_y = thr_y - 7 if thr_y > top + 20 else thr_y + 15
     parts.append(f'<line class="thr" x1="{left}" y1="{thr_y:.1f}" x2="{width - right}" y2="{thr_y:.1f}"/>')
     parts.append(f'<text class="thr-label" x="{width - right}" y="{thr_label_y:.1f}" '
-                 f'text-anchor="end">判定阈值 {analysis.threshold*100:.2f}%</text>')
+                 f'text-anchor="end">疑似线 {thr*100:.0f}%</text>')
     parts.append(f'<line class="axis" x1="{left}" y1="{top + plot_h}" '
                  f'x2="{width - right}" y2="{top + plot_h}"/>')
     step = max(1, n // 16)
     for i, us in enumerate(scores):
         x = left + i * slot + (slot - bar_w) / 2
-        p = max(0.0, min(1.0, us.p))
+        p = max(0.0, min(1.0, us.p_suspect))
         bar_h = max(plot_h * p, 3.0)
         y = top + plot_h - bar_h
-        color = GRADE_HEX.get(us.grade, GRADE_HEX["excluded"])
+        color = GRADE_HEX.get(us.grade_suspect, GRADE_HEX["excluded"])
         label = _unit_label(us)
         parts.append(
             f'<rect x="{x:.1f}" y="{y:.1f}" width="{bar_w:.1f}" height="{bar_h:.1f}" rx="2.5" '
-            f'fill="{color}"><title>{label} · P(AI)={_prob_txt(us.p)} · '
-            f'{GRADE_LABEL.get(us.grade, us.grade)} · {us.unit.chars} 字</title></rect>')
+            f'fill="{color}"><title>{label} · 疑似度={_prob_txt(us.p_suspect)} · '
+            f'{GRADE_LABEL.get(us.grade_suspect, us.grade_suspect)} · {us.unit.chars} 字</title></rect>')
         if show_vals:
             parts.append(f'<text class="vlabel" x="{x + bar_w / 2:.1f}" y="{y - 6:.1f}" '
-                         f'text-anchor="middle">{_prob_pct(us.p)}</text>')
+                         f'text-anchor="middle">{_prob_pct(us.p_suspect)}</text>')
         if i % step == 0 or i == n - 1:
             parts.append(f'<text x="{x + bar_w/2:.1f}" y="{top + plot_h + 17:.1f}" '
                          f'text-anchor="middle">{_unit_label(us).replace("第 ", "").replace(" 段", "")}</text>')
@@ -604,8 +607,8 @@ def _distribution_chart(analysis: Analysis) -> str:
 
 
 def _top_paragraphs(analysis: Analysis, limit: int = 3) -> str:
-    rows = [r for r in analysis.paragraphs if r.p is not None]
-    rows.sort(key=lambda r: r.p or 0.0, reverse=True)
+    rows = [r for r in analysis.paragraphs if r.p_suspect is not None]
+    rows.sort(key=lambda r: r.p_suspect or 0.0, reverse=True)
     picks = rows[:limit]
     if not picks:
         return ""
@@ -613,8 +616,8 @@ def _top_paragraphs(analysis: Analysis, limit: int = 3) -> str:
     for r in picks:
         items.append(
             f'<li><a href="#p{r.index + 1}">第 {r.index + 1} 段</a>'
-            f'<b>{_prob_txt(r.p)}</b>'
-            f'<span class="tag">{GRADE_LABEL.get(r.grade, r.grade)} · {r.chars} 字 · '
+            f'<b>{_prob_txt(r.p_suspect or 0.0)}</b>'
+            f'<span class="tag">{GRADE_LABEL.get(r.grade_suspect, r.grade_suspect)} · {r.chars} 字 · '
             f'{_esc(r.text[:26])}…</span></li>')
     return f'<div class="tops"><h3>优先自查</h3><ol>{"".join(items)}</ol></div>'
 
@@ -642,20 +645,23 @@ def _para_rows(analysis: Analysis) -> str:
                 f"<td>{kind}</td><td class='num'>{r.chars}</td>"
                 f"<td class='num'>—</td>"
                 f"<td><span class='g excluded'>未纳入</span></td>"
+                f"<td class='num'>—</td>"
                 f"<td class='cell-text'>{_esc(r.text[:90])}</td></tr>")
             continue
-        p = max(0.0, min(1.0, r.p))
-        heat = GRADE_HEX.get(r.grade, GRADE_HEX["excluded"])
+        grade = r.grade_suspect
+        p_sus = max(0.0, min(1.0, r.p_suspect or 0.0))
+        heat = GRADE_HEX.get(grade, GRADE_HEX["excluded"])
         sigs = "".join(f"<li>{_esc(s)}</li>" for s in r.signals) or "<li>未触发明显特征</li>"
         merged = " <span class='pnum'>(合并段)</span>" if r.merged else ""
         rows.append(
-            f"<tr id='p{r.index + 1}' data-grade='{r.grade}'>"
+            f"<tr id='p{r.index + 1}' data-grade='{grade}'>"
             f"<td class='num pnum'>{r.index + 1}</td>"
             f"<td>{kind}{merged}</td>"
             f"<td class='num'>{r.chars}</td>"
-            f"<td class='num heat'><span class='pv'>{_prob_txt(r.p)}</span>"
-            f"<span class='hbar'><i style='width:{p*100:.1f}%;background:{heat}'></i></span></td>"
-            f"<td><span class='g {r.grade}'>{GRADE_LABEL.get(r.grade, r.grade)}</span></td>"
+            f"<td class='num heat'><span class='pv'>{_prob_txt(p_sus)}</span>"
+            f"<span class='hbar'><i style='width:{p_sus*100:.1f}%;background:{heat}'></i></span></td>"
+            f"<td><span class='g {grade}'>{GRADE_LABEL.get(grade, grade)}</span></td>"
+            f"<td class='num'>{_prob_txt(r.p)}</td>"
             f"<td class='cell-text'>{_esc(r.text[:90])}"
             f"<details><summary>展开全文 / 判定依据</summary>"
             f"<div class='full'>{_esc(r.text)}</div>"
@@ -701,32 +707,35 @@ def _calibration_block(analysis: Analysis) -> str:
 
 def render(analysis: Analysis, generated_at: str | None = None) -> str:
     st = analysis.stats
-    rate = analysis.ai_rate_chars
-    rk = risk_key(rate, analysis.threshold)
-    title, desc = RISK[rk]
-    ci = analysis.ai_rate_ci
+    rate = analysis.ai_rate_suspect_chars or 0.0
+    conservative = analysis.ai_rate_chars
+    rk = analysis.grade_suspect or risk_key(rate, 0.60)
+    title, desc = RISK.get(rk, RISK["low"])
+    ci = analysis.ai_rate_suspect_ci
     ci_txt = (f"{_rate_txt(ci[0])} – {_rate_txt(ci[1])}" if ci else "样本段数太少，无法给出区间")
     generated_at = generated_at or time.strftime("%Y-%m-%d %H:%M:%S")
     calib = analysis.recipe
-    cuts = _grade_cutoffs(analysis)
+    cuts = dict(getattr(analysis, "suspect_cutoffs", None) or {}) or _grade_cutoffs(analysis)
     name = st.get("name", "文档")
     units = st.get("units", len(analysis.unit_scores) or 0)
-    high_n = analysis.grade_counts.get("high", 0)
-    mid_high_n = analysis.grade_counts.get("mid_high", 0)
-    ai_paras = analysis.grade_counts.get("high", 0) + analysis.grade_counts.get("mid_high", 0)
-    ps = [us.p for us in analysis.unit_scores]
-    spread = (sum((p - sum(ps) / len(ps)) ** 2 for p in ps) / len(ps)) ** 0.5 if len(ps) > 1 else 0.0
+    counts = analysis.grade_counts_suspect or analysis.grade_counts or {}
+    high_n = counts.get("high", 0)
+    mid_high_n = counts.get("mid_high", 0)
+    ai_paras = high_n + mid_high_n
+    sus_ps = [us.p_suspect for us in analysis.unit_scores]
+    spread = ((sum((p - sum(sus_ps) / len(sus_ps)) ** 2 for p in sus_ps) / len(sus_ps)) ** 0.5
+              if len(sus_ps) > 1 else 0.0)
     spread_txt = "低" if spread < 0.15 else ("中" if spread < 0.3 else "高")
 
-    scored = [r for r in analysis.paragraphs if r.p is not None]
-    max_p = max((r.p for r in scored), default=0.0)
-    below_n = sum(1 for r in scored if r.p < analysis.threshold)
+    scored = [r for r in analysis.paragraphs if r.p_suspect is not None]
+    max_p = max((r.p_suspect or 0.0 for r in scored), default=0.0)
+    below_n = sum(1 for r in scored if (r.p_suspect or 0.0) < analysis.suspect_threshold)
     low_signal = ""
-    if scored and max_p < analysis.threshold:
+    if scored and max_p < analysis.suspect_threshold:
         low_signal = (
-            f"<div class='ok'>{_ICON_CHECK}<div><b>全部 {len(scored)} 段都低于判定阈值"
-            f"（{analysis.threshold*100:.2f}%），最高的一段 P(AI) = {_prob_txt(max_p)}。</b>"
-            "这不是四舍五入凑出来的 0，而是模型确实给得很低，整篇更接近人工写作。"
+            f"<div class='ok'>{_ICON_CHECK}<div><b>全部 {len(scored)} 段都低于疑似线"
+            f"（{analysis.suspect_threshold*100:.0f}%），最高的一段疑似度 = {_prob_txt(max_p)}。</b>"
+            "这不是四舍五入凑出来的 0，而是判别器确实给得很低，整篇更接近人工写作。"
             "但方向要理解对：<b>分数低 ≠ 一定没用 AI</b> —— 检测器对「AI 生成后再大改」"
             "「较新模型的输出」漏检率明显更高。若你怀疑某几段，单独把那几段复制成小文档再测一次，"
             "比看整篇百分比更可靠。</div></div>")
@@ -739,8 +748,12 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
     fingerprint = json.dumps({
         "tool": "ai-detect",
         "calibration": {"version": calib.version, "calibrated": calib.calibrated},
-        "threshold": analysis.threshold, "mode": analysis.mode,
-        "ai_rate_chars": round(rate, 4),
+        "mode": analysis.mode,
+        "suspect_engine": analysis.suspect_engine,
+        "suspect_threshold": round(analysis.suspect_threshold, 4),
+        "ai_rate_suspect_chars": round(rate, 4),
+        "ai_rate_chars_conservative": round(conservative, 4),
+        "conservative_threshold": round(analysis.threshold, 4),
     }, ensure_ascii=False)
 
     filter_defs = [("all", "全部"), ("high", "极高"), ("mid_high", "偏高"), ("mid", "中等"),
@@ -765,7 +778,7 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
     <span>{_esc(name)}</span>
     <b class="num">{_rate_txt(rate)}</b>
     <span class="risk pill {rk}">{_esc(title.replace('结论：', ''))}</span>
-    <span>模式 {_esc(analysis.mode)} · 阈值 {analysis.threshold*100:.2f}%</span>
+    <span>模式 {_esc(analysis.mode)} · 疑似线 {analysis.suspect_threshold*100:.0f}%</span>
   </div>
 </div>
 
@@ -782,14 +795,14 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
   <div class="titles">
     <div class="eyebrow">Detection report</div>
     <h1>AI 生成率检测报告</h1>
-    <p class="subtitle">{_esc(title.replace('结论：', ''))}。整篇 AI 生成占比 <b>{_rate_txt(rate)}</b>
-      （95% 置信区间 {ci_txt}），{ai_paras}/{units} 段被判为 AI；建议按「逐段明细」
+    <p class="subtitle">{_esc(title.replace('结论：', ''))}。疑似 AI 占比 <b>{_rate_txt(rate)}</b>
+      （95% 置信区间 {ci_txt}），{ai_paras}/{units} 段被判为疑似 AI 段落；建议按「逐段明细」
       定位可疑段落并用你自己的表达改写。</p>
   </div>
   <dl class="metarow">
     <div><dt>文档</dt><dd>{_esc(name)}</dd></div>
     <div><dt>正文</dt><dd>{st.get('body_chars', 0)} 字 · {units} 段</dd></div>
-    <div><dt>模式</dt><dd>{_esc(analysis.mode)} · 阈值 {analysis.threshold*100:.2f}%</dd></div>
+    <div><dt>模式</dt><dd>{_esc(analysis.mode)} · 疑似线 {analysis.suspect_threshold*100:.0f}%</dd></div>
     <div><dt>生成时间</dt><dd>{_esc(generated_at)}</dd></div>
     <div><dt>检测耗时</dt><dd>{analysis.elapsed:.1f}s</dd></div>
   </dl>
@@ -798,22 +811,23 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
 <section class="card">
   <div class="verdict">
     <div class="gauge-wrap">
-      {_gauge(rate, analysis.threshold, rk)}
+      {_gauge(rate, 0.60, rk)}
       <div class="pill {rk}">{_esc(title.replace('结论：', ''))}</div>
     </div>
     <div class="verdict-body">
       <p>{_esc(desc)}</p>
       <div class="statgrid">
-        <div class="stat"><b>{_rate_txt(analysis.ai_rate_paras)}</b><span>AI 段落占比（{ai_paras}/{units} 段）</span></div>
-        <div class="stat"><b>{high_n}<small> 段</small></b><span>极高风险段</span></div>
-        <div class="stat"><b>{mid_high_n}<small> 段</small></b><span>偏高风险段</span></div>
+        <div class="stat"><b>{_rate_txt(analysis.ai_rate_suspect_paras)}</b><span>疑似段落占比（{ai_paras}/{units} 段）</span></div>
+        <div class="stat"><b>{high_n}<small> 段</small></b><span>极高疑似段</span></div>
+        <div class="stat"><b>{mid_high_n}<small> 段</small></b><span>偏高疑似段</span></div>
+        <div class="stat"><b>{_prob_txt(max_p)}</b><span>最高段疑似度</span></div>
+        <div class="stat"><b>{below_n}<small> 段</small></b><span>低于疑似线</span></div>
+        <div class="stat"><b>{_rate_txt(conservative)}</b><span>保守口径 AI 生成占比</span></div>
         <div class="stat"><b>{spread:.2f}</b><span>段落分歧（标准差·{spread_txt}）</span></div>
         <div class="stat"><b>{st.get('excluded_chars', 0)}<small> 字</small></b><span>已剔除（参考文献等）</span></div>
-        <div class="stat"><b>{_prob_txt(max_p)}</b><span>最高段 P(AI)</span></div>
-        <div class="stat"><b>{below_n}<small> 段</small></b><span>低于判定阈值</span></div>
       </div>
       {low_signal}
-      {_range_bar(rate, ci, analysis.threshold)}
+      {_range_bar(rate, ci, 0.60)}
       {_grade_bar(analysis)}
       {_top_paragraphs(analysis)}
     </div>
@@ -835,15 +849,15 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
 
 <section class="card" id="sec-dist">
   <div class="sec-head"><span class="sec-no">01</span><h2>段落分布</h2></div>
-  <p class="sec-lead">每根柱子是一个段落（或合并段）的 P(AI)；虚线是当前模式的判定阈值，
-    柱色表示风险档。鼠标悬停可看段号、精确概率与字数。</p>
+  <p class="sec-lead">每根柱子是一个段落（或合并段）的<b>疑似度</b>（v2 判别器给出的 P(AI)）；
+    虚线是本次模式的疑似线，柱色表示疑似档。鼠标悬停可看段号、精确概率与字数。</p>
   <div class="chart-wrap">{_distribution_chart(analysis)}</div>
   <div class="legend">
-    <span><i style="background:{GRADE_HEX['high']}"></i>极高（≥{_cut_txt(cuts['high'])}）</span>
-    <span><i style="background:{GRADE_HEX['mid_high']}"></i>偏高（≥{_cut_txt(cuts['mid_high'])}）</span>
-    <span><i style="background:{GRADE_HEX['mid']}"></i>中等（≥{_cut_txt(cuts['mid'])}）</span>
+    <span><i style="background:{GRADE_HEX['high']}"></i>极高（≥{_cut_txt(cuts.get('high', 0.75))}）</span>
+    <span><i style="background:{GRADE_HEX['mid_high']}"></i>偏高（≥{_cut_txt(cuts.get('mid_high', 0.52))}）</span>
+    <span><i style="background:{GRADE_HEX['mid']}"></i>中等（≥{_cut_txt(cuts.get('mid', 0.35))}）</span>
     <span><i style="background:{GRADE_HEX['low']}"></i>低（低于中等线）</span>
-    <span><i style="background:var(--high);height:2px;border-radius:1px"></i>判定阈值 {analysis.threshold*100:.2f}%</span>
+    <span><i style="background:var(--high);height:2px;border-radius:1px"></i>疑似线 {analysis.suspect_threshold*100:.0f}%</span>
   </div>
 </section>
 
@@ -861,7 +875,7 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
     <table>
       <thead><tr>
         <th class="num">#</th><th>类型</th><th class="num">字数</th>
-        <th class="num">P(AI)</th><th>等级</th><th>段落 / 依据</th>
+        <th class="num">疑似度</th><th>档位</th><th class="num">保守 P(AI)</th><th>段落 / 依据</th>
       </tr></thead>
       <tbody>{_para_rows(analysis)}</tbody>
     </table>
@@ -870,8 +884,8 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
 
 <section class="card" id="sec-engine">
   <div class="sec-head"><span class="sec-no">04</span><h2>引擎与标定</h2></div>
-  <p class="sec-lead">三个独立信号融合：判别器看「像不像模型写的」，困惑度看「有多可预测」，
-    文体统计看「结构是否过分工整」。</p>
+  <p class="sec-lead">四个独立信号融合：两份中文判别器分别看「像不像旧版/新版模型写的」，
+    困惑度看「有多可预测」，文体统计看「结构是否过分工整」。</p>
   {_calibration_block(analysis)}
   <div class="tablewrap">
     <table>
@@ -883,8 +897,13 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
     <div>
       <h3>口径定义</h3>
       <ul class="plain">
-        <li><b>AI 生成占比（字数口径）</b>：Σ(段落字数 × P(AI)) ÷ 正文字数。连续值，不是「判定为 AI 的字数」。</li>
-        <li><b>AI 段落占比</b>：P(AI) ≥ 阈值的段落数 ÷ 总段落数。</li>
+        <li><b>疑似 AI 占比（首屏大字）</b>：把每个段落交给 v2 判别器（跨多个生成器家族微调），
+          疑似度 ≥ 疑似线（{analysis.suspect_threshold*100:.0f}%）的段落字数 ÷ 正文字数。
+          这一口径与商业 AIGC 检测网站的思路一致，便于横向对照。</li>
+        <li><b>保守口径 AI 生成占比</b>：{_rate_txt(conservative)}。用 HC3 标定的严格融合分（判定阈值
+          {analysis.threshold*100:.2f}%），目标是压低误报——它对「旧版 ChatGPT 原样输出」敏感，
+          对较新模型的改写输出容易漏检。两个数字差得远，说明文本处于检测器的灰色地带。</li>
+        <li><b>段落档位</b>：按疑似度分四档（极高 / 偏高 / 中等 / 低），档位分界线见分布图图例。</li>
         <li><b>置信区间</b>：段落级 bootstrap 1000 次（固定种子，可复现），反映段落间分歧带来的不确定性。</li>
         <li><b>正文</b>：已剔除参考文献、页眉页脚等元信息后的可评分数。</li>
       </ul>

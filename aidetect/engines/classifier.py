@@ -41,11 +41,14 @@ def _init_torch() -> None:
 class ClassifierEngine:
     name = "clf"
     label = "中文判别模型"
+    spec_key = "clf"
+    dir_name = "clf"
+    FEAT_PREFIX = "clf"
     MIN_SENT_CHARS = 20
 
     def __init__(self, spec: dict | None = None, model_dir: Path | None = None) -> None:
-        self.spec = spec or config.MODEL_SPECS["clf"]
-        self.model_dir = model_dir or (config.MODELS_DIR / "clf")
+        self.spec = spec or config.MODEL_SPECS[self.spec_key]
+        self.model_dir = model_dir or (config.MODELS_DIR / self.dir_name)
         self._cache = TextCache()
         self._tok = None
         self._model = None
@@ -54,10 +57,19 @@ class ClassifierEngine:
 
     # --- 生命周期 ------------------------------------------------------
     def available(self) -> tuple[bool, str]:
-        need = ["config.json", "pytorch_model.bin", "vocab.txt"]
-        missing = [f for f in need if not (self.model_dir / f).exists()]
+        weights = [f for f in ("pytorch_model.bin", "model.safetensors")
+                   if (self.model_dir / f).exists()]
+        tokenizer = [f for f in ("tokenizer.json", "vocab.txt")
+                     if (self.model_dir / f).exists()]
+        missing: list[str] = []
+        if not (self.model_dir / "config.json").exists():
+            missing.append("config.json")
+        if not weights:
+            missing.append("pytorch_model.bin")
+        if not tokenizer:
+            missing.append("vocab.txt")
         if missing:
-            return False, f"缺少模型文件 {missing}，先跑：python -m aidetect fetch clf"
+            return False, f"缺少模型文件 {missing}，先跑：python -m aidetect fetch {self.spec_key}"
         try:
             import transformers  # noqa: F401
         except ImportError:
@@ -126,21 +138,23 @@ class ClassifierEngine:
         if not ok:
             return EngineResult(name=self.name, label=self.label, available=False, note=why)
         scores: list[float] = []
+        p = self.FEAT_PREFIX
         feats: dict[str, list[float]] = {k: [] for k in
-                                        ("clf_mean", "clf_max", "clf_min", "clf_std", "clf_nwin")}
+                                        (f"{p}_mean", f"{p}_max", f"{p}_min",
+                                         f"{p}_std", f"{p}_nwin")}
         for unit in units:
             windows = window_texts(unit.text, int(self.spec.get("window_chars", 300)))
             probs = self._forward(windows)
             weights = [max(1, char_count(w)) for w in windows]
-            mean = sum(p * w for p, w in zip(probs, weights)) / sum(weights)
+            mean = sum(p_ * w for p_, w in zip(probs, weights)) / sum(weights)
             mn = min(probs)
             mx = max(probs)
             scores.append(clamp01(mean))
-            feats["clf_mean"].append(mean)
-            feats["clf_max"].append(mx)
-            feats["clf_min"].append(mn)
-            feats["clf_std"].append((mx - mn))
-            feats["clf_nwin"].append(float(len(windows)))
+            feats[f"{p}_mean"].append(mean)
+            feats[f"{p}_max"].append(mx)
+            feats[f"{p}_min"].append(mn)
+            feats[f"{p}_std"].append((mx - mn))
+            feats[f"{p}_nwin"].append(float(len(windows)))
         return EngineResult(
             name=self.name, label=self.label, available=True,
             scores=scores, features=feats,
@@ -174,3 +188,17 @@ class ClassifierEngine:
                     left -= 1
             windows.append("".join(parts))
         return self._forward(windows)
+
+
+class CmjClassifierEngine(ClassifierEngine):
+    """第二判别器：zhv3 微调版（1:1 平衡、跨多模型家族的 AIGC 语料）。
+
+    与 ``clf``（HC3 v1，2022 年 ChatGPT 语料）互补：本模型见过的生成器更多，
+    对「现代大模型 + 人工润色」的文本更敏感，代价是误报略高。
+    """
+
+    name = "cmj"
+    label = "中文判别模型 v2"
+    spec_key = "cmj"
+    dir_name = "cmj"
+    FEAT_PREFIX = "cmj"

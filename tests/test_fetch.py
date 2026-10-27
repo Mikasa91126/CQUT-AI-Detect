@@ -61,7 +61,8 @@ def _patch_transfer(monkeypatch, data: bytes, fail_before: int = 0):
 
     monkeypatch.setattr(fetch, "_head_size", head)
     monkeypatch.setattr(fetch, "_fetch_chunk", chunk)
-    monkeypatch.setattr(fetch, "_endpoints", lambda: ["https://example.invalid"])
+    monkeypatch.setattr(fetch, "_endpoints",
+                        lambda mirror=None: ["https://example.invalid"])
     return calls
 
 

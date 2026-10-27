@@ -29,7 +29,7 @@ def _banner(text: str) -> None:
 
 
 def _models_ready() -> tuple[bool, list[str]]:
-    missing = [name for name in ("clf", "ppl") if not fetch.is_ready(name)]
+    missing = [name for name in ("clf", "ppl", "cmj") if not fetch.is_ready(name)]
     return (not missing), missing
 
 
@@ -52,18 +52,21 @@ def _rate_txt(rate: float) -> str:
 
 def _print_summary(analysis, html_path: Path | None, json_path: Path | None) -> None:
     st = analysis.stats
-    rate = analysis.ai_rate_chars
-    ci = analysis.ai_rate_ci
+    rate = analysis.ai_rate_suspect_chars
+    ci = analysis.ai_rate_suspect_ci or analysis.ai_rate_ci
     ci_txt = f"{_rate_txt(ci[0])}–{_rate_txt(ci[1])}" if ci else "样本不足"
     print(f"\n文档：{st.get('name')}  正文 {st.get('body_chars')} 字 / {st.get('units')} 段 "
           f"（剔除 {st.get('excluded_chars', 0)} 字）")
     for e in analysis.engine_info:
         state = "✓" if e["available"] else "✗"
         print(f"引擎 {state} {e['label']}" + (f"  {e['note']}" if e["note"] else ""))
-    print(f"\nAI 生成占比（字数口径）：{_rate_txt(rate)}   95% CI {ci_txt}")
-    judged = analysis.grade_counts.get("high", 0) + analysis.grade_counts.get("mid_high", 0)
-    print(f"AI 段落占比：{_rate_txt(analysis.ai_rate_paras)}（{judged}/{st.get('units')} 段判为 AI）"
-          f"   模式 {analysis.mode} / 阈值 {analysis.threshold*100:.2f}%")
+    print(f"\n疑似 AI 占比（段落口径）：{_rate_txt(rate)}   95% CI {ci_txt}")
+    judged = (analysis.grade_counts_suspect.get("high", 0)
+              + analysis.grade_counts_suspect.get("mid_high", 0))
+    print(f"疑似段落占比：{_rate_txt(analysis.ai_rate_suspect_paras)}（{judged}/{st.get('units')} 段判为疑似）"
+          f"   模式 {analysis.mode} / 疑似线 {analysis.suspect_threshold*100:.0f}%")
+    print(f"保守口径 AI 生成占比：{_rate_txt(analysis.ai_rate_chars)}"
+          f"（标定阈值 {analysis.threshold*100:.2f}%，对较新模型的改写输出容易漏检）")
     if analysis.warnings:
         print("\n护栏提示：")
         for w in analysis.warnings:
@@ -177,8 +180,8 @@ def cmd_fetch(args: argparse.Namespace) -> int:
 def cmd_calibrate(args: argparse.Namespace) -> int:
     from . import calibrate
 
-    if not all(fetch.is_ready(n) for n in ("clf", "ppl", "hc3zh")):
-        print("标定需要 clf/ppl/hc3zh 三类资源。先运行 python -m aidetect fetch all",
+    if not all(fetch.is_ready(n) for n in ("clf", "cmj", "ppl", "hc3zh")):
+        print("标定需要 clf/cmj/ppl/hc3zh 四类资源。先运行 python -m aidetect fetch all",
               file=sys.stderr)
         return EXIT_RESOURCE
     calib = calibrate.run(limit=args.limit)

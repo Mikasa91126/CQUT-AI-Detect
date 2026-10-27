@@ -5,7 +5,7 @@
     {
       "name": "doctor 退出码 0（环境/模型/标定/语料就绪）",
       "ok": true,
-      "detail": "实际 0，耗时 4.6s，末行：自检通过：可以运行检测。",
+      "detail": "实际 0，耗时 5.6s，末行：自检通过：可以运行检测。",
       "required": true
     },
     {
@@ -17,7 +17,7 @@
     {
       "name": "真实 report 耗时 < 60s",
       "ok": true,
-      "detail": "实测 [13.34]s",
+      "detail": "实测 [16.18]s",
       "required": true
     },
     {
@@ -29,7 +29,7 @@
     {
       "name": "HTML 产物为本次新生成（mtime 校验）",
       "ok": true,
-      "detail": "mtime=23:07:36",
+      "detail": "mtime=23:57:03",
       "required": true
     },
     {
@@ -41,7 +41,7 @@
     {
       "name": "JSON 产物为本次新生成（mtime 校验）",
       "ok": true,
-      "detail": "mtime=23:07:36",
+      "detail": "mtime=23:57:03",
       "required": true
     },
     {
@@ -83,7 +83,7 @@
     {
       "name": "HTML 体积 > 20KB",
       "ok": true,
-      "detail": "51.3 KB",
+      "detail": "52.4 KB",
       "required": false
     },
     {
@@ -95,7 +95,7 @@
     {
       "name": "JSON 可 json.load 解析",
       "ok": true,
-      "detail": "10.0 KB",
+      "detail": "11.2 KB",
       "required": true
     },
     {
@@ -113,7 +113,7 @@
     {
       "name": "混排文档 ai_rate_chars ∈ (0.3, 0.85)",
       "ok": true,
-      "detail": "实测 0.5424",
+      "detail": "实测 0.5422",
       "required": true
     },
     {
@@ -161,7 +161,7 @@
     {
       "name": "engines 为非空列表且每项含 name/available",
       "ok": true,
-      "detail": "实际 ['clf', 'ppl', 'stylo']",
+      "detail": "实际 ['clf', 'cmj', 'ppl', 'stylo']",
       "required": true
     },
     {
@@ -185,7 +185,7 @@
     {
       "name": "mode/threshold 合法",
       "ok": true,
-      "detail": "mode=balanced，threshold=0.0087",
+      "detail": "mode=balanced，threshold=0.0071",
       "required": false
     },
     {
@@ -197,19 +197,19 @@
     {
       "name": "AI 段 p_ai 中位数 > 0.5（段落级强证据）",
       "ok": true,
-      "detail": "AI 段中位数 0.9999；P0(ai)=0.9999，P1(human)=0.002，P2(ai)=0.9999，P3(human)=0.0052，P4(ai)=0.9999，P5(human)=0.0003，P6(ai)=0.9999，P7(human)=0.0006",
+      "detail": "AI 段中位数 1.0；P0(ai)=1.0，P1(human)=0.0019，P2(ai)=1.0，P3(human)=0.0031，P4(ai)=1.0，P5(human)=0.0004，P6(ai)=1.0，P7(human)=0.0006",
       "required": true
     },
     {
       "name": "人类段 p_ai 中位数 < 0.1（段落级强证据）",
       "ok": true,
-      "detail": "人类段中位数 0.0013；P0(ai)=0.9999，P1(human)=0.002，P2(ai)=0.9999，P3(human)=0.0052，P4(ai)=0.9999，P5(human)=0.0003，P6(ai)=0.9999，P7(human)=0.0006",
+      "detail": "人类段中位数 0.00125；P0(ai)=1.0，P1(human)=0.0019，P2(ai)=1.0，P3(human)=0.0031，P4(ai)=1.0，P5(human)=0.0004，P6(ai)=1.0，P7(human)=0.0006",
       "required": true
     },
     {
       "name": "被判为 AI 的段落（p_ai > threshold）恰好都是 AI 段（INFO，仅参考）",
       "ok": true,
-      "detail": "被判 AI 的段：[('ai', 0, 0.9999), ('ai', 2, 0.9999), ('ai', 4, 0.9999), ('ai', 6, 0.9999)]；threshold=0.0087",
+      "detail": "被判 AI 的段：[('ai', 0, 1.0), ('ai', 2, 1.0), ('ai', 4, 1.0), ('ai', 6, 1.0)]；threshold=0.0071",
       "required": false
     },
     {
@@ -245,7 +245,7 @@
     {
       "name": "人类单篇 fixture balanced（record-only：仅记录，不判定 AI 率）",
       "ok": true,
-      "detail": "ai_rate_chars=0.1247，ai_rate_paras=0.125，threshold=0.0087，耗时 12.4s，段落 p_ai 中位数 0.0008",
+      "detail": "ai_rate_chars=0.139，ai_rate_paras=1.0，threshold=0.0071，耗时 19.1s，段落 p_ai 中位数 0.0180",
       "required": false
     },
     {
@@ -257,7 +257,7 @@
     {
       "name": "人类单篇 fixture strict（record-only：仅记录，不判定 AI 率）",
       "ok": true,
-      "detail": "ai_rate_chars=0.1247，ai_rate_paras=0.125，threshold=0.0618，耗时 12.4s，段落 p_ai 中位数 0.0008",
+      "detail": "ai_rate_chars=0.139，ai_rate_paras=0.125，threshold=0.0648，耗时 17.4s，段落 p_ai 中位数 0.0180",
       "required": false
     }
   ],
@@ -265,7 +265,7 @@
     "fixture 原始字符数（含空白）": 2393,
     "fixture 去空白字符数": 2319,
     "report 实测耗时(s)": [
-      13.34
+      16.18
     ],
     "混排逐段 p_ai（段号/标签/分数）": [
       {
@@ -273,49 +273,49 @@
         "label": "ai",
         "source": "open_qa",
         "chars": 223,
-        "p_ai": 0.9999
+        "p_ai": 1.0
       },
       {
         "paragraph": 1,
         "label": "human",
         "source": "open_qa",
         "chars": 224,
-        "p_ai": 0.002
+        "p_ai": 0.0019
       },
       {
         "paragraph": 2,
         "label": "ai",
         "source": "baike",
         "chars": 304,
-        "p_ai": 0.9999
+        "p_ai": 1.0
       },
       {
         "paragraph": 3,
         "label": "human",
         "source": "baike",
         "chars": 235,
-        "p_ai": 0.0052
+        "p_ai": 0.0031
       },
       {
         "paragraph": 4,
         "label": "ai",
         "source": "finance",
         "chars": 363,
-        "p_ai": 0.9999
+        "p_ai": 1.0
       },
       {
         "paragraph": 5,
         "label": "human",
         "source": "finance",
         "chars": 321,
-        "p_ai": 0.0003
+        "p_ai": 0.0004
       },
       {
         "paragraph": 6,
         "label": "ai",
         "source": "medicine",
         "chars": 366,
-        "p_ai": 0.9999
+        "p_ai": 1.0
       },
       {
         "paragraph": 7,
@@ -325,17 +325,17 @@
         "p_ai": 0.0006
       }
     ],
-    "ai_rate_chars": 0.5424,
+    "ai_rate_chars": 0.5422,
     "ai_rate_paras": 0.5,
     "ai_rate_ci": [
-      0.1564,
-      0.8897
+      0.1562,
+      0.8898
     ],
     "grade_counts": {
       "high": 4,
       "mid_high": 0,
-      "mid": 1,
-      "low": 3
+      "mid": 0,
+      "low": 4
     },
     "document": {
       "total_chars": 2319,
@@ -346,10 +346,14 @@
       "ref_cut": false
     },
     "calibration.calibrated": true,
-    "mode/threshold": "balanced / 0.0087",
+    "mode/threshold": "balanced / 0.0071",
     "engines": [
       [
         "clf",
+        true
+      ],
+      [
+        "cmj",
         true
       ],
       [
@@ -361,32 +365,32 @@
         true
       ]
     ],
-    "降级路径耗时(s)": 0.14,
+    "降级路径耗时(s)": 0.15,
     "人类单篇 fixture / balanced": {
-      "ai_rate_chars": 0.1247,
-      "ai_rate_paras": 0.125,
-      "threshold": 0.0087,
+      "ai_rate_chars": 0.139,
+      "ai_rate_paras": 1.0,
+      "threshold": 0.0071,
       "grade_counts": {
         "high": 1,
-        "mid_high": 0,
+        "mid_high": 7,
         "mid": 0,
-        "low": 7
+        "low": 0
       },
-      "elapsed_sec": 11.41,
-      "wall_sec": 12.39
+      "elapsed_sec": 17.65,
+      "wall_sec": 19.09
     },
     "人类单篇 fixture / strict": {
-      "ai_rate_chars": 0.1247,
+      "ai_rate_chars": 0.139,
       "ai_rate_paras": 0.125,
-      "threshold": 0.0618,
+      "threshold": 0.0648,
       "grade_counts": {
         "high": 1,
         "mid_high": 0,
         "mid": 0,
         "low": 7
       },
-      "elapsed_sec": 11.43,
-      "wall_sec": 12.44
+      "elapsed_sec": 15.94,
+      "wall_sec": 17.35
     }
   },
   "html": "C:\\Users\\mikasa\\Documents\\DeepSeek Harness\\ai-detect\\out\\mixed_hc3_report.html",

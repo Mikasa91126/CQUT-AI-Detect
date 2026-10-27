@@ -28,6 +28,9 @@ CURATED_FEATURES = [
     "clf_mean",        # 分类器段落均值分
     "clf_max",         # 分类器最可疑窗口
     "clf_std",         # 分类器窗口内分歧（越大越像拼接/混合）
+    "cmj_mean",        # 第二判别器（zhv3 系）段落均值分
+    "cmj_max",         # 第二判别器最可疑窗口
+    "cmj_std",         # 第二判别器窗口内分歧
     "ppl_rel",         # 文档内相对流畅度（越高越像 AI）
     "top10",           # GLTR top-10 桶占比
     "burst_rel",       # 文档内相对 burstiness（越低越像 AI，取负号后越高越像）
@@ -37,7 +40,8 @@ CURATED_FEATURES = [
     "st_repeat3",      # 三字重复率
 ]
 
-DEFAULT_ENGINE_WEIGHTS = {"clf": 0.70, "ppl": 0.20, "stylo": 0.10}
+# 未标定时的权重：两份判别器占主导，PPL 与文体统计做补充
+DEFAULT_ENGINE_WEIGHTS = {"clf": 0.20, "cmj": 0.45, "ppl": 0.25, "stylo": 0.10}
 DEFAULT_TEMPERATURE = 1.0
 
 

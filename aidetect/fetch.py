@@ -19,6 +19,7 @@ import shutil
 import sys
 import threading
 import time
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -33,17 +34,24 @@ PART_TMPL = ".p{:03d}"
 
 
 # --------------------------------------------------------------------------- 网络
-def _endpoints() -> list[str]:
-    """优先 HF_ENDPOINT（或其环境变量），失败再退镜像。"""
+def _endpoints(mirror: str | None = None) -> list[str]:
+    """优先 spec 指定的镜像；否则 HF_ENDPOINT（或官方），失败再退 hf-mirror。"""
+    if mirror == "modelscope":
+        return ["modelscope"]
     primary = os.environ.get("HF_ENDPOINT", "https://huggingface.co").rstrip("/")
     out = [primary]
-    mirror = "https://hf-mirror.com"
-    if primary != mirror:
-        out.append(mirror)
+    hf_mirror = "https://hf-mirror.com"
+    if primary != hf_mirror:
+        out.append(hf_mirror)
     return out
 
 
 def _url(repo: str, kind: str, filename: str, base: str) -> str:
+    # ModelScope：https://modelscope.cn/api/v1/models/{repo}/repo?Revision=master&FilePath={file}
+    if base == "modelscope":
+        quoted = urllib.parse.quote(filename)
+        return (f"https://modelscope.cn/api/v1/models/{repo}/repo"
+                f"?Revision=master&FilePath={quoted}")
     # 模型：https://huggingface.co/{repo}/resolve/main/{file}
     # 数据集：https://huggingface.co/datasets/{repo}/resolve/main/{file}
     seg = "datasets/" if kind == "dataset" else ""
@@ -231,14 +239,15 @@ def _write_provenance(dest_dir: Path, filename: str, info: dict) -> None:
 
 def download_file(repo: str, kind: str, filename: str, dest: Path,
                   workers: int = 8, expect_size: int | None = None,
-                  chunk_bytes: int = CHUNK_BYTES, retries: int = 200) -> Path:
-    """把 HF 仓库中的单个文件下到 dest（原子替换，支持分片续传）。"""
+                  chunk_bytes: int = CHUNK_BYTES, retries: int = 200,
+                  mirror: str | None = None) -> Path:
+    """把仓库中的单个文件下到 dest（原子替换，支持分片续传）。"""
     if dest.exists() and (expect_size is None or dest.stat().st_size == expect_size):
         print(f"  [skip] {filename} 已存在", flush=True)
         return dest
     dest.parent.mkdir(parents=True, exist_ok=True)
 
-    urls = [_url(repo, kind, filename, base) for base in _endpoints()]
+    urls = [_url(repo, kind, filename, base) for base in _endpoints(mirror)]
     size = expect_size or _head_size(urls)
     parts, spans = _plan_parts(dest, size, workers, chunk_bytes)
 
@@ -317,6 +326,7 @@ def download_file(repo: str, kind: str, filename: str, dest: Path,
     _delete_parts(dest)
     _write_provenance(dest.parent, filename, {
         "repo": repo, "kind": kind, "bytes": size, "urls": urls,
+        "mirror": mirror or "hf",
         "fetched_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
     })
     print(f"  [ok] {filename} ({size/1e6:.1f} MB)", flush=True)
@@ -342,7 +352,8 @@ def ensure(name: str, workers: int = 8, chunk_bytes: int = CHUNK_BYTES,
     for fn in spec["files"]:
         try:
             out.append(download_file(spec["repo"], spec["kind"], fn, dest_dir / fn,
-                                     workers=workers, chunk_bytes=chunk_bytes, retries=retries))
+                                     workers=workers, chunk_bytes=chunk_bytes,
+                                     retries=retries, mirror=spec.get("mirror")))
         except Exception as exc:  # noqa: BLE001
             errors.append(exc)
             print(f"  [ERR] {fn}: {exc}", flush=True)
@@ -362,7 +373,8 @@ def is_ready(name: str) -> bool:
 def _usage() -> str:
     return (
         "用法: python -m aidetect.fetch [资源 ...] [--workers N] [--chunk-mb N] [--retries N]\n"
-        "资源: clf | ppl | hc3zh | all（默认 clf ppl；all = clf ppl hc3zh）\n"
+        "资源: clf | cmj | qwen | ppl | hc3zh | all"
+        "（默认 clf cmj ppl；all = clf cmj ppl hc3zh；qwen 为可选实验组件）\n"
         "这是唯一联网的命令；失败后再跑同一条命令会自动续传。\n"
     )
 
@@ -381,9 +393,9 @@ def main(argv: list[str] | None = None) -> int:
                 return 2
             opts[key] = int(argv[i + 1])
             del argv[i:i + 2]
-    names = argv or ["clf", "ppl"]
+    names = argv or ["clf", "cmj", "ppl"]
     if names == ["all"]:
-        names = ["clf", "ppl", "hc3zh"]
+        names = ["clf", "cmj", "ppl", "hc3zh"]
     known = set(config.MODEL_SPECS) | set(config.DATASET_SPECS)
     unknown = [n for n in names if n not in known]
     if unknown:

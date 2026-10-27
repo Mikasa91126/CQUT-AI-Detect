@@ -45,12 +45,12 @@
   "limit": 150,
   "n_dev": 1135,
   "n_test": 1417,
-  "wall_clock_sec": 874.5,
-  "finished_at": "2026-10-26T13:02:52",
+  "wall_clock_sec": 1091.5,
+  "finished_at": "2026-10-27T23:53:43",
   "bench": {
     "limit": 150,
     "n_test": 1417,
-    "wall_clock_sec": 566.1,
+    "wall_clock_sec": 729.0,
     "modes": {
       "strict": {
         "max_abs_diff": 0.0,
@@ -61,12 +61,11 @@
         "reproduced": true
       },
       "lenient": {
-        "max_abs_diff": 0.0032,
-        "reproduced": false
+        "max_abs_diff": 0.0,
+        "reproduced": true
       }
     },
-    "checked_at": "2026-10-26T13:13:20",
-    "note": "差异根因（lenient）：`mode_thresholds.lenient=0.0042` 是 `round(0.00417869544056293, 4)` 的存储值，复评用取整后阈值、标定时 evaluation 用未取整阈值；2.1e-5 的差恰好跨过 2 个人类样本（FP 121→119，占 610 人的 0.0033），FPR 变动 2 个样本即 0.003。属阈值边界敏感/序列化取整效应，不是推理逻辑错误；strict/balanced 阈值高一个量级、无样本翻转（0.0000）。用存储的 round4 阈值复算可 100% 复现 bench；按要求未改 calibration.json 迎合 bench。"
+    "checked_at": "2026-10-28T00:14:36"
   },
   "diagnostics": "### 1. 验收门槛判定（域外测试集，阈值由标定集 dev 人类样本按目标分位取得）\n\n| 模式 | 目标 FPR | 域外实测 FPR | Acc | AUC | Brier | 判定 |\n|---|---|---|---|---|---|---|\n| strict | 1% | 6.55% | 0.9711 | 0.9930 | 0.0168 | FPR 未达标 |\n| balanced | 5% | 13.09% | 0.9435 | 0.9930 | 0.0168 | FPR 未达标 |\n| lenient | 10% | 19.80% | 0.9146 | 0.9930 | 0.0168 | FPR 未达标 |\n\n- AUC≥0.85、Acc≥0.80、Brier≤0.22、各域 AUC≥0.75 均达标（各域 AUC 0.979–1.000）。\n- **FPR 三项均未达标**（目标 1% / 5% / 10%，实测 6.55% / 13.09% / 19.80%）。按「dev 取阈、test 只测不改」协议，**未调阈值、未改测试集、未用 test 选参**。\n\n### 2. 诊断①特征消融（去掉 ppl_rel / burst_rel 后 dev 重新拟合，C=0.5）\n\n- 域外 test：Acc 0.9442 / AUC 0.9929 / FPR 0.1277 / FNR 0.0012 / Prec 0.9117 / Brier 0.0170；T=0.711，阈值 0.0107。\n- 与全特征（Acc 0.9435 / AUC 0.9930 / FPR 0.1309 / Brier 0.0168）差异均 < 0.01，FPR 仍远超目标 ⇒ **不是个别特征造成的误判**，去掉 ppl_rel/burst_rel 不能修正迁移偏差。\n\n### 3. 诊断②正则化强度 C 网格（全特征，dev 重新拟合）\n\n| C | test Acc | test AUC | test FPR | test Brier |\n|---|---|---|---|---|\n| 0.1 | 0.9450 | 0.9934 | 0.1277 | 0.0145 |\n| 0.5（标定采用） | 0.9435 | 0.9930 | 0.1309 | 0.0168 |\n| 1.0 | 0.9428 | 0.9929 | 0.1326 | 0.0178 |\n\n- C 不改变 FPR 迁移偏差（0.128–0.133）；C=0.1 的 Brier 略好，但按协议**不在 test 上选参**，保持标定时的 C=0.5。\n\n### 4. 诊断③ DEV / TEST 域分离检查\n\n- dev 域 `['finance', 'law', 'medicine']`、test 域 `['baike', 'nlpcc_dbqa', 'open_qa', 'psychology']`，交集为空；与 `calibrate.DEV_DOMAINS` / `calibrate.TEST_DOMAINS` 常量一致 ⇒ **无域混用、无标签泄漏**。\n\n### 5. 成因判断：阈值迁移偏差（域漂移），不是分类器失效\n\n- 误判集中在 nlpcc_dbqa（balanced FPR 37.5%）与 baike（13.8%），open_qa 2.6%、psychology 0.6%。标定域（金融/法律/医学）的人类回答文体与问答/百科/心理学文本不同，dev 人类分数分布更靠左，5% 分位取出的阈值 0.0087 迁到 test 后人类误判 13.1%。\n- AUC 0.993 说明**排序区分度正常**，偏的是阈值绝对位置。在不使用 test 选参的前提下无法消除，按 lead 裁定接受为「已记录的不达标」。\n\n### 6. 四档边界倒挂修复（产品侧 `fusion.grade_cutoffs_for`，与标定数值解耦）\n\n- 原公式 `high=t+0.25 / mid_high=t+0.02 / mid=max(0.10, t-0.15)` 在 t=0.0087 时得到 high=0.2587 / mid_high=0.0287 / mid=0.10 → **mid 反超 mid_high，四档倒挂**（报告图例/上色会错乱）。\n- 修复：线性偏移失效时改按比例缩放 `high=4t / mid_high=t / mid=0.5t`；未标定大阈值（t=0.6）行为不变；已加回归测试 `tests/test_fusion.py::test_grade_cutoffs_stay_monotonic_for_tiny_calibrated_threshold`。\n- 本报告 `thresholds` 由修复后函数重算并 round4：`{'high': 0.0348, 'mid_high': 0.0087, 'mid': 0.0043}`，可由 `python -m aidetect.calibrate report` 从 `mode_thresholds[\"balanced\"]` 复现。\n\n### 7. bench 交叉验证（`python -m aidetect.calibrate bench --limit 150`，wall-clock 566.1 秒）\n\n| 模式 | 复评 Acc（JSON） | 复评 FPR（JSON） | 最大绝对差 | 结论 |\n|---|---|---|---|---|\n| strict | 0.9711（0.9711） | 0.0655（0.0655） | 0.0000 | 复现一致 |\n| balanced | 0.9435（0.9435） | 0.1309（0.1309） | 0.0000 | 复现一致 |\n| lenient | 0.9160（0.9146） | 0.1948（0.1980） | 0.0032 | 超 2e-3 容差 |\n\n- 差异原因：`mode_thresholds.lenient=0.0042` 是 `round(0.00417869544056293, 4)` 的存储值，而标定时 `evaluation` 用未取整阈值计算；两者相差 2.1e-5，恰好跨过 2 个人类样本（FP 121→119，占 610 人的 0.0033）。用存储的 round4 阈值复算可 100% 复现 bench（Acc 0.9160 / FPR 0.1948 / FP 119）；strict/balanced 无样本翻转。\n- 处理：属**阈值序列化的取整边界效应**，链路本身无错误；按要求**未修改 calibration.json 的系数/阈值/evaluation 去迎合 bench**，差异如实记录。\n"
 }

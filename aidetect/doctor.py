@@ -78,6 +78,11 @@ def _check_models() -> tuple[bool, list[str]]:
         missing = [f for f in spec["files"] if not (d / f).exists()]
         total = sum((d / f).stat().st_size for f in spec["files"] if (d / f).exists())
         if missing:
+            if spec.get("optional"):
+                lines.append(_row(WARN, f"模型 {name}（{spec['title']}）",
+                                  f"可选组件未下载（缺 {len(missing)} 个文件），"
+                                  f"不影响主链路 → python -m aidetect fetch {name}"))
+                continue
             ok = False
             lines.append(_row(BAD, f"模型 {name}（{spec['title']}）",
                               f"缺 {len(missing)} 个文件：{', '.join(missing[:3])}… "

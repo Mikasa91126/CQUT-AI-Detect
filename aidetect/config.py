@@ -37,6 +37,46 @@ MODEL_SPECS: dict[str, dict] = {
         "max_tokens": 512,
         "batch_size": 8,
     },
+    "cmj": {
+        "kind": "model",
+        "repo": "mokawa3018/cmj-chinese-aigc-text-detector",
+        "mirror": "modelscope",
+        "title": "中文判别模型 v2（zhv3 微调，1:1 平衡多模型语料）",
+        "license": "Apache-2.0",
+        "files": [
+            "config.json",
+            "pytorch_model.bin",
+            "vocab.txt",
+            "tokenizer.json",
+            "tokenizer_config.json",
+            "special_tokens_map.json",
+        ],
+        # config.id2label 已核实为 {0: human, 1: AI}
+        "ai_label": 1,
+        "window_chars": 300,
+        "max_tokens": 512,
+        "batch_size": 8,
+    },
+    "qwen": {
+        "kind": "model",
+        "repo": "Qwen/Qwen2.5-0.5B",
+        "mirror": "modelscope",
+        "optional": True,
+        "title": "现代中文 LM（Qwen2.5-0.5B，实验性，未接入主链路）",
+        "license": "Apache-2.0",
+        "files": [
+            "config.json",
+            "generation_config.json",
+            "model.safetensors",
+            "tokenizer.json",
+            "tokenizer_config.json",
+            "vocab.json",
+            "merges.txt",
+        ],
+        "max_tokens": 512,
+        "batch_size": 4,
+        "topk": 100,
+    },
     "ppl": {
         "kind": "model",
         "repo": "uer/gpt2-chinese-cluecorpussmall",
@@ -68,6 +108,15 @@ DATASET_SPECS: dict[str, dict] = {
 DEFAULT_THRESHOLDS = {"high": 0.80, "mid_high": 0.60, "mid": 0.40}
 MODE_TARGET_FPR = {"strict": 0.01, "balanced": 0.05, "lenient": 0.10}
 DEFAULT_MODE = "balanced"
+
+# 「疑似 AI 占比」用的判定概率线（商业 AIGC 检测器的常见口径：按段落/句子判定，
+# 再统计被判为 AI 的字符占比）。它和上面的 FPR 标定阈值是两套口径：
+# - FPR 阈值（可能有 0.00x 这么小）用于「整篇风险等级」的严格判定；
+# - 疑似线（默认 0.50）用于和网站结果对齐的「AI 疑似度」。
+SUSPECT_BY_MODE = {"strict": 0.70, "balanced": 0.50, "lenient": 0.35}
+
+# 「疑似 AI 占比」→ 风险四档（占比口径，独立于上面的概率阈值）
+SHARE_GRADES = {"high": 0.60, "mid_high": 0.40, "mid": 0.20}
 
 # 困惑度引擎的兜底启发式映射（未标定时用于展示，正式判定以标定权重为准）：
 #   score = sigmoid((mid - ppl) / scale)

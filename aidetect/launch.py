@@ -192,10 +192,10 @@ def _interactive(mode: str) -> int:
 def main(argv: list[str] | None = None) -> int:
     _tolerant_console()
     args = list(sys.argv[1:] if argv is None else argv)
-    missing = [name for name in ("clf", "ppl") if not fetch.is_ready(name)]
+    missing = [name for name in ("clf", "ppl", "cmj") if not fetch.is_ready(name)]
     if missing:
         print(f"缺少模型：{', '.join(missing)}")
-        print("先在项目目录运行：python -m aidetect fetch all  （约 830MB，只需一次）")
+        print("先在项目目录运行：python -m aidetect fetch all  （约 1.2GB，只需一次）")
         return EXIT_RESOURCE
 
     mode = config.DEFAULT_MODE

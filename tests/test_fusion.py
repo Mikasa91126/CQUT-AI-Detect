@@ -35,7 +35,9 @@ def test_build_features_aligns_and_derives_relative_terms():
 def test_uncalibrated_fuse_uses_engine_weights():
     units = make_units(make_doc(2))
     probs, _ = fuse(units, fake_results(len(units), clf=0.9, ppl=0.1, stylo=0.1), Recipe())
-    expect = 0.70 * 0.9 + 0.20 * 0.1 + 0.10 * 0.1
+    w = fusion.DEFAULT_ENGINE_WEIGHTS
+    total = w["clf"] + w["ppl"] + w["stylo"]  # cmj 未参与 → 权重重归一化
+    expect = (w["clf"] * 0.9 + w["ppl"] * 0.1 + w["stylo"] * 0.1) / total
     assert probs == pytest.approx([expect, expect])
 
 
@@ -104,8 +106,9 @@ def test_load_recipe_broken_file_falls_back(tmp_path):
 
 def test_curated_features_match_recipe_contract():
     assert fusion.CURATED_FEATURES == [
-        "clf_mean", "clf_max", "clf_std", "ppl_rel", "top10",
-        "burst_rel", "st_cv_slen", "st_conn100", "st_tmpl100", "st_repeat3",
+        "clf_mean", "clf_max", "clf_std", "cmj_mean", "cmj_max", "cmj_std",
+        "ppl_rel", "top10", "burst_rel",
+        "st_cv_slen", "st_conn100", "st_tmpl100", "st_repeat3",
     ]
 
 def test_grade_cutoffs_stay_monotonic_for_tiny_calibrated_threshold():
