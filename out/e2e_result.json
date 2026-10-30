@@ -5,7 +5,7 @@
     {
       "name": "doctor 退出码 0（环境/模型/标定/语料就绪）",
       "ok": true,
-      "detail": "实际 0，耗时 5.6s，末行：自检通过：可以运行检测。",
+      "detail": "实际 0，耗时 8.3s，末行：自检通过：可以运行检测。",
       "required": true
     },
     {
@@ -17,7 +17,7 @@
     {
       "name": "真实 report 耗时 < 60s",
       "ok": true,
-      "detail": "实测 [16.18]s",
+      "detail": "实测 [28.21]s",
       "required": true
     },
     {
@@ -29,7 +29,7 @@
     {
       "name": "HTML 产物为本次新生成（mtime 校验）",
       "ok": true,
-      "detail": "mtime=23:57:03",
+      "detail": "mtime=21:28:37",
       "required": true
     },
     {
@@ -41,7 +41,7 @@
     {
       "name": "JSON 产物为本次新生成（mtime 校验）",
       "ok": true,
-      "detail": "mtime=23:57:03",
+      "detail": "mtime=21:28:37",
       "required": true
     },
     {
@@ -83,7 +83,7 @@
     {
       "name": "HTML 体积 > 20KB",
       "ok": true,
-      "detail": "52.4 KB",
+      "detail": "85.3 KB",
       "required": false
     },
     {
@@ -95,7 +95,7 @@
     {
       "name": "JSON 可 json.load 解析",
       "ok": true,
-      "detail": "11.2 KB",
+      "detail": "23.8 KB",
       "required": true
     },
     {
@@ -245,7 +245,7 @@
     {
       "name": "人类单篇 fixture balanced（record-only：仅记录，不判定 AI 率）",
       "ok": true,
-      "detail": "ai_rate_chars=0.139，ai_rate_paras=1.0，threshold=0.0071，耗时 19.1s，段落 p_ai 中位数 0.0180",
+      "detail": "ai_rate_chars=0.139，ai_rate_paras=1.0，threshold=0.0071，耗时 42.4s，段落 p_ai 中位数 0.0180",
       "required": false
     },
     {
@@ -257,7 +257,7 @@
     {
       "name": "人类单篇 fixture strict（record-only：仅记录，不判定 AI 率）",
       "ok": true,
-      "detail": "ai_rate_chars=0.139，ai_rate_paras=0.125，threshold=0.0648，耗时 17.4s，段落 p_ai 中位数 0.0180",
+      "detail": "ai_rate_chars=0.139，ai_rate_paras=0.125，threshold=0.0648，耗时 29.7s，段落 p_ai 中位数 0.0180",
       "required": false
     }
   ],
@@ -265,7 +265,7 @@
     "fixture 原始字符数（含空白）": 2393,
     "fixture 去空白字符数": 2319,
     "report 实测耗时(s)": [
-      16.18
+      28.21
     ],
     "混排逐段 p_ai（段号/标签/分数）": [
       {
@@ -365,7 +365,7 @@
         true
       ]
     ],
-    "降级路径耗时(s)": 0.15,
+    "降级路径耗时(s)": 0.3,
     "人类单篇 fixture / balanced": {
       "ai_rate_chars": 0.139,
       "ai_rate_paras": 1.0,
@@ -376,8 +376,8 @@
         "mid": 0,
         "low": 0
       },
-      "elapsed_sec": 17.65,
-      "wall_sec": 19.09
+      "elapsed_sec": 39.58,
+      "wall_sec": 42.37
     },
     "人类单篇 fixture / strict": {
       "ai_rate_chars": 0.139,
@@ -389,8 +389,8 @@
         "mid": 0,
         "low": 7
       },
-      "elapsed_sec": 15.94,
-      "wall_sec": 17.35
+      "elapsed_sec": 27.46,
+      "wall_sec": 29.71
     }
   },
   "html": "C:\\Users\\mikasa\\Documents\\DeepSeek Harness\\ai-detect\\out\\mixed_hc3_report.html",

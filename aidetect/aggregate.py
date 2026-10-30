@@ -14,7 +14,8 @@ from dataclasses import dataclass, field
 
 from . import config, fusion
 from .engines.base import EngineResult, clamp01
-from .engines.classifier import ClassifierEngine, CmjClassifierEngine
+from .engines.classifier import (ClassifierEngine, CmjClassifierEngine,
+                                 Zhv3ClassifierEngine)
 from .engines.perplexity import PerplexityEngine
 from .engines.stylometry import StylometryEngine, explain as stylo_explain
 from .segment import Doc, Para, Unit, make_units, stats as doc_stats
@@ -85,6 +86,9 @@ class Analysis:
     suspect_engine: str = "cmj"
     suspect_cutoffs: dict[str, float] = field(default_factory=dict)
     grade_counts_suspect: dict[str, int] = field(default_factory=dict)
+    # 站点对照轨道（PaperPass 口径）：映射到 0-100 分后按档位统计疑似文字占比。
+    # 这是「激进口径」，与上面的保守口径并列展示，不参与 risk/grade/ai_rate 判定。
+    site: "site.SiteReport | None" = None
 
     def to_dict(self) -> dict:
         return {
@@ -139,6 +143,7 @@ class Analysis:
                 {"text": s.text, "p_ai": round(s.p, 4), "para": s.para_index}
                 for s in self.sentences
             ],
+            "site": self.site.to_dict() if self.site else None,
             "elapsed_sec": round(self.elapsed, 2),
         }
 
@@ -149,6 +154,25 @@ def build_engines(include_cmj: bool = True) -> list:
     if include_cmj:
         out.append(CmjClassifierEngine())
     out.extend([PerplexityEngine(), StylometryEngine()])
+    return out
+
+
+def _site_engines(engines: list | None) -> list:
+    """站点对照轨用的引擎清单：在真实引擎列表上补 zhv3（缺权重则跳过）。
+
+    只对真实引擎生效：单测传进来的 FakeEngine 不加载模型，避免把 390MB 模型
+    拖进单测；站点轨拿不到可用引擎时会自己降级为 None。
+    """
+    if not engines:
+        return []
+    if not any(type(e).__module__.startswith("aidetect.") for e in engines):
+        return list(engines)
+    out = list(engines)
+    if not any(getattr(e, "name", "") == "zhv3" for e in out):
+        try:
+            out.append(Zhv3ClassifierEngine())
+        except Exception:  # noqa: BLE001 - 缺 spec/依赖时站点轨回退到 cmj
+            pass
     return out
 
 
@@ -246,6 +270,14 @@ def analyze(doc: Doc, mode: str = config.DEFAULT_MODE, engines: list | None = No
     stats = doc_stats(doc)
     stats["units"] = len(units)
 
+    # 站点对照轨道：独立于上面的保守口径，失败时静默降级为 None（不影响主流程）。
+    site_report = None
+    try:
+        from . import site as site_mod
+        site_report = site_mod.evaluate(doc, engines=_site_engines(engines))
+    except Exception:
+        site_report = None
+
     return Analysis(
         doc=doc, stats=stats, units=units, unit_scores=unit_scores,
         paragraphs=paras, sentences=sentences,
@@ -261,6 +293,7 @@ def analyze(doc: Doc, mode: str = config.DEFAULT_MODE, engines: list | None = No
         suspect_engine="cmj" if suspect_res is not None else "融合分",
         suspect_cutoffs=suspect_cutoffs,
         grade_counts_suspect=grade_counts_suspect,
+        site=site_report,
     )
 
 

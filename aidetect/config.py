@@ -57,6 +57,26 @@ MODEL_SPECS: dict[str, dict] = {
         "max_tokens": 512,
         "batch_size": 8,
     },
+    "zhv3": {
+        "kind": "model",
+        "repo": "yuchuantian/AIGC_detector_zhv3",
+        "title": "中文判别模型 v3（站点对照轨，更敏感但不平衡）",
+        "license": "Apache-2.0",
+        "optional": True,
+        "files": [
+            "config.json",
+            "pytorch_model.bin",
+            "vocab.txt",
+            "tokenizer_config.json",
+            "special_tokens_map.json",
+        ],
+        # 与 cmj 同基座（chinese-roberta-wwm-ext, vocab 21128），id2label {0: human, 1: AI}；
+        # 未下载时站点对照轨会回退到 cmj。
+        "ai_label": 1,
+        "window_chars": 300,
+        "max_tokens": 512,
+        "batch_size": 8,
+    },
     "qwen": {
         "kind": "model",
         "repo": "Qwen/Qwen2.5-0.5B",
@@ -121,6 +141,25 @@ SHARE_GRADES = {"high": 0.60, "mid_high": 0.40, "mid": 0.20}
 # 困惑度引擎的兜底启发式映射（未标定时用于展示，正式判定以标定权重为准）：
 #   score = sigmoid((mid - ppl) / scale)
 PPL_HEURISTIC = {"mid": 25.0, "scale": 8.0}
+
+# --- 站点对照轨（对齐 PaperPass 等商业 AIGC 报告的档位口径） ------------------
+# 商业站点普遍用「句级 0-100 分 + 红/橙/黄档位 + 疑似文字占比」呈现结果：
+#   >=70 高疑似（红）、60-70 中疑似（橙）、50-60 低疑似（黄）、其余无 AI 疑似。
+# 我们把 zhv3 原始分（更敏感、不平衡）经 site_map.json 的 Q-Q 映射换到同一把尺子上。
+# 这是「解释站点分数」的激进口径，**不是**证据口径；保守口径仍是标定融合分。
+SITE_TRACK = {
+    "engines": ["zhv3", "cmj"],  # 按优先级尝试，取第一个可用的
+    "window_chars": 240,
+    "bands": {"high": 70.0, "mid_high": 60.0, "mid": 50.0},
+    "band_labels": {
+        "high": "高疑似",
+        "mid_high": "中疑似",
+        "mid": "低疑似",
+        "none": "无 AI 疑似",
+    },
+    "map_file": "site_map.json",
+    "batch_size": 64,
+}
 
 # --- 文本处理 -------------------------------------------------------------
 MIN_RELIABLE_CHARS = 300      # 低于此字数，报告标注「不可靠」

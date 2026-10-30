@@ -202,3 +202,18 @@ class CmjClassifierEngine(ClassifierEngine):
     spec_key = "cmj"
     dir_name = "cmj"
     FEAT_PREFIX = "cmj"
+
+
+class Zhv3ClassifierEngine(ClassifierEngine):
+    """第三判别器：zhv3 原版（站点对照轨用）。
+
+    它没有做 1:1 平衡微调，原始分整体偏高（对人写正式文本也常给 0.2-0.5），
+    正适合对齐商业网站的激进口径；**不要**让它参与保守口径的融合判定。
+    """
+
+    name = "zhv3"
+    label = "中文判别模型 v3"
+    spec_key = "zhv3"
+    dir_name = "zhv3"
+    FEAT_PREFIX = "zhv3"
+

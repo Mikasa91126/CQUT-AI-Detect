@@ -34,6 +34,33 @@ PART_TMPL = ".p{:03d}"
 
 
 # --------------------------------------------------------------------------- 网络
+def _use_proxy() -> bool:
+    """是否走系统/环境代理。
+
+    默认跟随系统设置；设置了 AIDETECT_NO_PROXY=1 时强制直连 —— 常见场景是
+    本机开着 Clash/V2Ray 但端口已关闭，系统代理会让所有请求报 WinError 10061。
+    """
+    return os.environ.get("AIDETECT_NO_PROXY", "").strip() not in {"1", "true", "yes"}
+
+
+_OPENER: urllib.request.OpenerDirector | None = None
+
+
+def _opener() -> urllib.request.OpenerDirector:
+    """返回 urllib opener：默认跟随系统代理，AIDETECT_NO_PROXY=1 时禁用代理。"""
+    global _OPENER
+    if _OPENER is None:
+        if _use_proxy():
+            _OPENER = urllib.request.build_opener()
+        else:
+            _OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    return _OPENER
+
+
+def _open(req: urllib.request.Request, timeout: float):
+    return _opener().open(req, timeout=timeout)
+
+
 def _endpoints(mirror: str | None = None) -> list[str]:
     """优先 spec 指定的镜像；否则 HF_ENDPOINT（或官方），失败再退 hf-mirror。"""
     if mirror == "modelscope":
@@ -65,7 +92,7 @@ def _head_size(urls: list[str], attempts: int = 6) -> int:
         for url in urls:
             try:
                 req = urllib.request.Request(url, headers=UA, method="HEAD")
-                with urllib.request.urlopen(req, timeout=30) as r:
+                with _open(req, timeout=30) as r:
                     n = r.headers.get("Content-Length") or r.headers.get("content-length")
                     if n:
                         return int(n)
@@ -73,7 +100,7 @@ def _head_size(urls: list[str], attempts: int = 6) -> int:
                 last = exc
             try:  # 某些 CDN 不支持 HEAD：退回 Range 探测
                 req = urllib.request.Request(url, headers={**UA, "Range": "bytes=0-0"})
-                with urllib.request.urlopen(req, timeout=30) as r:
+                with _open(req, timeout=30) as r:
                     cr = r.headers.get("Content-Range") or ""
                     if "/" in cr:
                         return int(cr.rsplit("/", 1)[1])
@@ -129,11 +156,17 @@ class _Progress:
 def _stream_range(url: str, path: Path, start: int, end: int, progress: _Progress) -> None:
     """把 [start, end] 追加写入 path（调用方保证 start == 现有大小）。"""
     req = urllib.request.Request(url, headers={**UA, "Range": f"bytes={start}-{end}"})
-    with urllib.request.urlopen(req, timeout=120) as r:
+    with _open(req, timeout=120) as r:
         status = getattr(r, "status", 200)
+        mode = "ab"
         if status != 206:
-            raise RuntimeError(f"服务器未按 Range 返回（HTTP {status}）")
-        with open(path, "ab") as f:
+            # 部分镜像（如 ModelScope 小文件）忽略 Range 直接 200 返回整个文件；
+            # 只有「一次性下完整个文件」时才允许，避免多个分片重复下载全量。
+            whole = start == 0 and end >= progress.size - 1
+            if status != 200 or not whole:
+                raise RuntimeError(f"服务器未按 Range 返回（HTTP {status}）")
+            mode = "wb"
+        with open(path, mode) as f:
             while True:
                 buf = r.read(READ_BLOCK)
                 if not buf:
@@ -372,18 +405,25 @@ def is_ready(name: str) -> bool:
 
 def _usage() -> str:
     return (
-        "用法: python -m aidetect.fetch [资源 ...] [--workers N] [--chunk-mb N] [--retries N]\n"
-        "资源: clf | cmj | qwen | ppl | hc3zh | all"
-        "（默认 clf cmj ppl；all = clf cmj ppl hc3zh；qwen 为可选实验组件）\n"
+        "用法: python -m aidetect.fetch [资源 ...] [--workers N] [--chunk-mb N] [--retries N] [--no-proxy]\n"
+        "资源: clf | cmj | zhv3 | ppl | hc3zh | qwen | all"
+        "（默认 clf cmj zhv3 ppl；all = 默认 + hc3zh；qwen 为可选实验组件）\n"
+        "zhv3 是站点对照轨用的判别器（约 390MB），不下也能跑，只是看不到站点对照数字。\n"
         "这是唯一联网的命令；失败后再跑同一条命令会自动续传。\n"
+        "--no-proxy: 忽略系统代理直连（本机代理端口已关闭时用这个，等价于 AIDETECT_NO_PROXY=1）。\n"
     )
 
 
 def main(argv: list[str] | None = None) -> int:
+    global _OPENER
     argv = list(sys.argv[1:] if argv is None else argv)
     if any(a in ("-h", "--help", "help") for a in argv):
         print(_usage(), end="", flush=True)
         return 0
+    if "--no-proxy" in argv:
+        argv.remove("--no-proxy")
+        os.environ["AIDETECT_NO_PROXY"] = "1"
+        _OPENER = None
     opts = {"--workers": 8, "--chunk-mb": CHUNK_BYTES // (1024 * 1024), "--retries": 200}
     for key in list(opts):
         if key in argv:
@@ -393,9 +433,9 @@ def main(argv: list[str] | None = None) -> int:
                 return 2
             opts[key] = int(argv[i + 1])
             del argv[i:i + 2]
-    names = argv or ["clf", "cmj", "ppl"]
+    names = argv or ["clf", "cmj", "zhv3", "ppl"]
     if names == ["all"]:
-        names = ["clf", "cmj", "ppl", "hc3zh"]
+        names = ["clf", "cmj", "zhv3", "ppl", "hc3zh"]
     known = set(config.MODEL_SPECS) | set(config.DATASET_SPECS)
     unknown = [n for n in names if n not in known]
     if unknown:

@@ -14,6 +14,7 @@ import json
 import math
 import time
 
+from . import config
 from .aggregate import Analysis, UnitScore
 
 CSS = """
@@ -120,6 +121,13 @@ h3{font-size:14.5px;margin:0 0 8px;font-family:var(--sans);font-weight:700}
   font-variant-numeric:tabular-nums}
 .gauge-num small{font-size:20px;font-weight:600;color:var(--ink-3);margin-left:1px}
 .gauge-cap{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-top:8px}
+/* 首屏用站点口径时，长标签放在圆环下方：打印缩环也不会压到轨道 */
+.gauge-scope{font-size:12px;letter-spacing:.06em;color:var(--ink-2);margin:0;max-width:250px;
+  text-align:center;line-height:1.5}
+/* 首屏换用站点口径时，大字下方保留一行保守口径小字 */
+.hero-alt{margin:0;font-size:12.2px;color:var(--ink-3);text-align:center;max-width:250px;line-height:1.65}
+.hero-alt b{color:var(--ink);font-variant-numeric:tabular-nums}
+.verdict-body>p.hero-note{font-size:12.6px;color:var(--ink-3);margin:-6px 0 16px;max-width:60ch}
 .pill{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:6px 14px;
   font-size:13px;font-weight:700;border:1px solid transparent;line-height:1.35}
 .pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
@@ -317,6 +325,73 @@ footer code{font-size:11.8px}
   html{scroll-behavior:auto}
   *{transition:none !important;animation:none !important}
 }
+
+/* ---------- site cross-check（PaperPass 口径对照） ---------- */
+.sitepanel .sec-lead{margin-bottom:14px}
+.sitehead{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 28px;padding:16px 20px;
+  margin:0 0 14px;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:var(--radius-sm)}
+.sitehead-main{display:flex;flex-direction:column;gap:3px;min-width:168px}
+.sitenum{font-family:var(--serif);font-size:clamp(32px,5.4vw,46px);line-height:1.02;
+  font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--ink)}
+.sitecap{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.sitescore{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;padding-bottom:6px}
+.sitescore .sitecap{align-self:center}
+.sitescore b{font-family:var(--serif);font-size:26px;line-height:1;font-weight:700;
+  font-variant-numeric:tabular-nums;color:var(--ink)}
+.sitescore span:last-child{font-size:13px;color:var(--ink-3)}
+.siteengine{font-size:11.5px;color:var(--ink-3);font-family:var(--mono);
+  border:1px solid var(--line);border-radius:999px;padding:2px 9px;margin-left:auto}
+.sitechips{display:flex;flex-wrap:wrap;gap:8px 10px;margin:0 0 16px}
+.sitechip{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;line-height:1.4;
+  color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line);
+  border-radius:999px;padding:5px 12px}
+.sitechip i{width:9px;height:9px;border-radius:50%;background:var(--chip,var(--ink-4));flex:none}
+.sitechip b{color:var(--ink);font-variant-numeric:tabular-nums;font-weight:700}
+.sitechip.bandhigh{--chip:var(--high);background:#fdecea;color:#a83226}
+.sitechip.bandmidhigh{--chip:var(--mid-high);background:#fef1e0;color:#a75d17}
+.sitechip.bandmid{--chip:var(--mid);background:#fdf6d8;color:#7d6410}
+.sitechip.bandnone{--chip:var(--excluded);background:var(--surface-2);color:var(--ink-2)}
+/* 前三档 chip 底色固定为浅色高亮，深色主题下百分比也固定用深色，避免浅字压浅底 */
+.sitechip.bandhigh b,.sitechip.bandmidhigh b,.sitechip.bandmid b{color:#26292f}
+.sitechip.bandnone b{color:var(--ink)}
+.sitebody{font-family:var(--serif);font-size:15.5px;line-height:1.9;color:var(--ink-2);
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:20px 24px;margin:0 0 14px}
+.sitebody .sitepara{margin:0 0 1.15em;text-indent:2em}
+.sitebody .sitepara:last-child{margin-bottom:0}
+.sitebody span{padding:1px 2px;border-radius:3px;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone}
+.bandhigh{background:#fdecea;color:#a83226}
+.bandmidhigh{background:#fef1e0;color:#a75d17}
+.bandmid{background:#fdf6d8;color:#7d6410}
+.bandnone{background:transparent;color:inherit}
+.site-note{margin:0;font-size:12.4px;color:var(--ink-3);line-height:1.7;max-width:88ch}
+.site-note b{color:var(--ink-2)}
+.sitedetails{margin-top:14px}
+.sitedetails table{min-width:560px}
+.sitedetails .bandtag{font-size:11.5px;font-weight:700;white-space:nowrap}
+.sitepanel .tablewrap{margin-top:10px}
+@media(max-width:560px){
+  .sitehead{padding:13px 15px;gap:8px 18px}
+  .sitebody{padding:16px 15px;font-size:14.5px;line-height:1.85}
+  .sitescore b{font-size:22px}
+  .siteengine{margin-left:0}
+}
+@media print{
+  .sitehead,.sitechips,.sitebody,.sitepanel{-webkit-print-color-adjust:exact;
+    print-color-adjust:exact}
+  .sitehead{padding:10px 14px;margin-bottom:8px}
+  .sitenum{font-size:30px}
+  .sitebody{font-size:10.5px;line-height:1.76;padding:10px 12px;margin-bottom:8px}
+  .sitechip{font-size:10.5px;padding:3px 8px}
+  .site-note{font-size:9.5px}
+  /* 站点正文是整篇正文，可能超过一页：允许跨页，但头部与 chips 不拆开 */
+  .sitepanel{break-inside:auto;page-break-inside:auto}
+  .sitehead,.sitechips{break-inside:avoid;page-break-inside:avoid}
+  /* 打印时圆环缩到 170px，口径标签放在环下方，字号略收 */
+  .gauge-scope{font-size:10px;letter-spacing:.04em;line-height:1.4}
+}
 """
 
 JS = """
@@ -385,6 +460,34 @@ GRADE_HEX = {"high": "#a83226", "mid_high": "#a75d17", "mid": "#7d6410", "low": 
              "excluded": "#8a8d96"}
 _RISK_VAR = {"high": "var(--high)", "mid_high": "var(--mid-high)", "mid": "var(--mid)",
              "low": "var(--low)"}
+
+# 站点对照（PaperPass 口径）：站点给的四档 → 中文标签 + 正文着色 class
+SITE_BANDS = (
+    ("high", "高疑似", "bandhigh"),
+    ("mid_high", "中疑似", "bandmidhigh"),
+    ("mid", "低疑似", "bandmid"),
+    ("none", "无 AI 疑似", "bandnone"),
+)
+_SITE_BAND_LABEL = {key: label for key, label, _ in SITE_BANDS}
+_SITE_BAND_CLASS = {key: cls for key, _, cls in SITE_BANDS}
+_SITE_WARNING = ("这是与商业网站对齐的激进口径，用于解释站点分数；"
+                 "判定 AI 使用请以保守口径与逐段证据为准。")
+
+# 首屏站点对照口径：档位线用 config.SHARE_GRADES（≥60% 高 / ≥40% 中高 / ≥20% 中 / 其余低），
+# 文案与保守口径（RISK）分开写，避免把「站点疑似」直接说成「AI 生成」。
+_SITE_PILL = {"high": "高疑似", "mid_high": "中高疑似", "mid": "中疑似", "low": "低疑似"}
+_SITE_VERDICT = {
+    "high": ("站点对照口径下，60% 以上的文字被判为疑似 AI。这个口径与商业网站对齐、判定偏激进："
+             "它把「像 AI」当成「疑似 AI」，人类写的新闻、公文也会被大面积标成疑似。"
+             "它解释的是「为什么商业网站给得高」，不是「你用了 AI」的证据。"),
+    "mid_high": ("站点对照口径下，40%–60% 的文字落在疑似档。这个口径与商业网站对齐、判定偏激进："
+                 "模板化表达、术语密集的段落都容易被标成疑似。它是站点分数的解释，"
+                 "不是 AI 使用证据。"),
+    "mid": ("站点对照口径下，20%–40% 的文字落在疑似档。站点口径偏激进，少量工整的段落就可能推高占比；"
+            "请结合下方「站点对照」的正文着色与逐段证据判断，不要只看这一个数字。"),
+    "low": ("站点对照口径下，疑似文字低于 20%，与商业网站的低疑似区间一致。注意：站点这套激进口径"
+            "也没抓到多少特征，不等于没有 AI 参与；结论仍以逐段证据与保守口径为准。"),
+}
 
 _ICON_SHIELD = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
                 'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
@@ -476,8 +579,13 @@ def _rate_txt(rate: float) -> str:
     return f"{_rate_num(rate)}%"
 
 
-def _gauge(rate: float, threshold: float, risk: str) -> str:
-    """环形量表：进度环 = 疑似 AI 占比，刻度 = 高风险线（60%），颜色随风险档变化。"""
+def _gauge(rate: float, threshold: float, risk: str, label: str = "疑似 AI 占比",
+           show_cap: bool = True) -> str:
+    """环形量表：进度环 = 占比，刻度 = 高风险线（60%），颜色随风险档变化。
+
+    label 由调用方指定口径（保守口径 / 站点对照），避免首屏大数字说错口径；
+    show_cap=False 时把标签交给调用方放在圆环外（长标签不会压到环上）。
+    """
     size, center, radius, width = 236, 118, 92, 13
     circ = 2 * math.pi * radius
     dash = max(0.0, min(1.0, rate)) * circ
@@ -495,8 +603,9 @@ def _gauge(rate: float, threshold: float, risk: str) -> str:
             f'x2="{center + (radius + 8) * math.cos(a):.1f}" '
             f'y2="{center + (radius + 8) * math.sin(a):.1f}" '
             f'stroke="var(--line-2)" stroke-width="1.5" stroke-linecap="round"/>')
+    cap_html = f'\n    <div class="gauge-cap">{label}</div>' if show_cap else ""
     return f"""<div class="gauge">
-  <svg viewBox="0 0 {size} {size}" role="img" aria-label="疑似 AI 占比 {_rate_txt(rate)}，高风险线 {threshold*100:.0f}%">
+  <svg viewBox="0 0 {size} {size}" role="img" aria-label="{label} {_rate_txt(rate)}，高风险线 {threshold*100:.0f}%">
     <circle cx="{center}" cy="{center}" r="{radius}" fill="none" stroke="var(--gauge-track)" stroke-width="{width}"/>
     <circle cx="{center}" cy="{center}" r="{radius}" fill="none" stroke="{color}" stroke-width="{width}"
       stroke-linecap="round" stroke-dasharray="{dash:.2f} {circ:.2f}" transform="rotate(-90 {center} {center})"/>
@@ -505,8 +614,7 @@ def _gauge(rate: float, threshold: float, risk: str) -> str:
       stroke-linecap="round"/>
   </svg>
   <div class="gauge-center">
-    <div class="gauge-num">{_rate_num(rate)}<small>%</small></div>
-    <div class="gauge-cap">疑似 AI 占比</div>
+    <div class="gauge-num">{_rate_num(rate)}<small>%</small></div>{cap_html}
   </div>
 </div>"""
 
@@ -685,6 +793,216 @@ def _sentence_rows(analysis: Analysis, visible: int = 8) -> str:
     return html_out
 
 
+def _as_float(value) -> float | None:
+    """把站点对象里的数字安全地转成 float；缺失/非法一律返回 None。"""
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _site_ratio(analysis: Analysis) -> float | None:
+    """站点疑似文字占比（0–1）；site 缺失或字段异常时返回 None（首屏退回保守口径）。"""
+    site = getattr(analysis, "site", None)
+    if site is None:
+        return None
+    ratio = _as_float(getattr(site, "suspected_ratio", None))
+    if ratio is None:
+        ratios = getattr(site, "ratios", None)
+        if isinstance(ratios, dict):
+            ratio = _as_float(ratios.get("suspected"))
+    return ratio
+
+
+def _site_headline(analysis: Analysis) -> float | None:
+    """站点综合分（0–100）；缺失时返回 None。"""
+    site = getattr(analysis, "site", None)
+    if site is None:
+        return None
+    return _as_float(getattr(site, "headline", None))
+
+
+def _site_meta(analysis: Analysis) -> dict:
+    """站点映射元信息；不是 dict 时按空字典处理。"""
+    site = getattr(analysis, "site", None)
+    meta = getattr(site, "meta", None) if site is not None else None
+    return meta if isinstance(meta, dict) else {}
+
+
+def _site_risk_key(rate: float) -> str:
+    """按 config.SHARE_GRADES 给站点占比分档，与保守口径的 risk_key 解耦。"""
+    grades = getattr(config, "SHARE_GRADES", None) or {}
+    for key in ("high", "mid_high", "mid"):
+        cut = _as_float(grades.get(key))
+        if cut is not None and rate >= cut:
+            return key
+    return "low"
+
+
+def _site_verdict(rate: float) -> tuple[str, str, str]:
+    """站点占比 →（档位 key、风险 pill 文案、站点口径解释）。"""
+    rk = _site_risk_key(rate)
+    return rk, _SITE_PILL[rk], _SITE_VERDICT[rk]
+
+
+def _site_span(sent) -> str:
+    """一句正文：按站点档位套四色 class，悬停显示句分。站点字段缺失时按「无 AI」处理。"""
+    text = str(getattr(sent, "text", "") or "")
+    band = str(getattr(sent, "band", "") or "")
+    cls = _SITE_BAND_CLASS.get(band, "bandnone")
+    score = _as_float(getattr(sent, "score", None))
+    if score is None:
+        p = _as_float(getattr(sent, "p", None))
+        if p is not None:  # p 是 0–1 概率；score 缺失时换算成 0–100 分
+            score = p * 100 if 0.0 <= p <= 1.0 else p
+    title = f' title="句分 {score:.1f}"' if score is not None else ""
+    return f'<span class="{cls}"{title}>{_esc(text)}</span>'
+
+
+def _site_human_reference(meta: dict) -> str:
+    """人类正式文本误报参考：一句话披露，不做主指标；缺字段时返回空字符串。"""
+    human = meta.get("human_reference") if isinstance(meta, dict) else None
+    if not isinstance(human, dict):
+        return ""
+    parts = []
+    for key, label in (("hc3_human", "对话语料"), ("thucnews_human", "新闻")):
+        item = human.get(key)
+        if not isinstance(item, dict):
+            continue
+        share = _as_float(item.get("corpus_suspected_share"))
+        if share is not None:
+            parts.append(f"{_pct(share)}（{label}）")
+    if not parts:
+        return ""
+    return (f'<p class="site-note" style="margin-top:8px">人类正式文本误报参考 '
+            f'{" / ".join(parts)}：站点对照口径偏激进，人类写的正式文本也会被大面积判为疑似；'
+            f'这个数字只用来解释口径的激进程度，不能当 AI 使用证据。</p>')
+
+
+def _site_panel(analysis: Analysis) -> str:
+    """站点对照区块：PaperPass 式大字占比 + 四档色块图例 + 正文逐句着色。
+
+    站点数据可能尚未接入（site 为 None）或字段不全：缺失的字段按「跳过该部分」处理，
+    绝不抛异常，也不影响主报告其余区块的渲染。
+    """
+    site = getattr(analysis, "site", None)
+    if site is None:
+        return ""
+
+    ratios = getattr(site, "ratios", None)
+    ratios = ratios if isinstance(ratios, dict) else {}
+    meta = getattr(site, "meta", None)
+    meta = meta if isinstance(meta, dict) else {}
+    raw_sentences = getattr(site, "sentences", None) or []
+    try:
+        sentences = list(raw_sentences)
+    except TypeError:
+        sentences = []
+
+    ratio = _as_float(getattr(site, "suspected_ratio", None))
+    if ratio is None:
+        ratio = _as_float(ratios.get("suspected"))
+    headline = _as_float(getattr(site, "headline", None))
+    if ratio is None and headline is None:
+        return ""  # 连汇总数字都没有，整块跳过
+
+    ratio_txt = _pct(ratio) if ratio is not None else "—"
+    headline_txt = f"{headline:.1f}" if headline is not None else "—"
+    engine = str(getattr(site, "engine", "") or "")
+    # 映射文件里不一定有 "source"（当前资源里是 method/site），缺失时退到它们。
+    source = str(meta.get("source") or "").strip()
+    if not source:
+        source = str(meta.get("method") or "").strip()
+    if not source:
+        source = str(meta.get("site") or "").strip()
+
+    chips = []
+    for key, label, cls in SITE_BANDS:
+        value = _as_float(ratios.get(key))
+        if value is None:
+            continue
+        chips.append(f'<span class="sitechip {cls}"><i></i>{label}'
+                     f'<b>{_pct(value)}</b></span>')
+    chips_html = f'<div class="sitechips">{"".join(chips)}</div>' if chips else ""
+    engine_html = f'<span class="siteengine">引擎 {_esc(engine)}</span>' if engine else ""
+
+    head_html = (
+        f'<div class="sitehead">'
+        f'<div class="sitehead-main"><b class="sitenum">{ratio_txt}</b>'
+        f'<span class="sitecap">疑似文字占比（高 + 中 + 低）</span></div>'
+        f'<div class="sitescore"><span class="sitecap">综合分</span>'
+        f'<b>{headline_txt}</b><span>/ 100</span></div>'
+        f'{engine_html}</div>')
+
+    # 正文着色：按 para_index 分组，保持句子原本顺序；段与段之间留空行（CSS margin）。
+    groups: dict[int, list] = {}
+    order: list[int] = []
+    for sent in sentences:
+        try:
+            para_index = int(getattr(sent, "para_index", 0) or 0)
+        except (TypeError, ValueError):
+            para_index = 0
+        if para_index not in groups:
+            groups[para_index] = []
+            order.append(para_index)
+        groups[para_index].append(sent)
+    body_html = ""
+    if order:
+        paras = "".join(
+            f'<p class="sitepara">{"".join(_site_span(s) for s in groups[pi])}</p>'
+            for pi in order)
+        body_html = f'<div class="sitebody">{paras}</div>'
+
+    detail_html = ""
+    if sentences:
+        shown = sentences[:60]
+        rows = []
+        for i, sent in enumerate(shown, 1):
+            try:
+                para_index = int(getattr(sent, "para_index", 0) or 0)
+            except (TypeError, ValueError):
+                para_index = 0
+            band = str(getattr(sent, "band", "") or "")
+            score = _as_float(getattr(sent, "score", None))
+            if score is None:
+                p = _as_float(getattr(sent, "p", None))
+                if p is not None:
+                    score = p * 100 if 0.0 <= p <= 1.0 else p
+            text = str(getattr(sent, "text", "") or "")
+            summary = text[:60] + ("…" if len(text) > 60 else "")
+            band_label = _esc(_SITE_BAND_LABEL.get(band, band or "—"))
+            cls = _SITE_BAND_CLASS.get(band, "bandnone")
+            score_txt = f"{score:.1f}" if score is not None else "—"
+            rows.append(
+                f"<tr><td class='num pnum'>{i}</td><td class='num'>第 {para_index + 1} 段</td>"
+                f"<td class='num'>{score_txt}</td>"
+                f"<td><span class='bandtag {cls}'>{band_label}</span></td>"
+                f"<td class='cell-text'>{_esc(summary)}</td></tr>")
+        more = (f'<p class="site-note" style="margin-top:8px">共 {len(sentences)} 句，'
+                f'明细只列前 {len(shown)} 条。</p>') if len(sentences) > len(shown) else ""
+        detail_html = (
+            f'<details class="sitedetails"><summary>句子分数明细（前 60 条）</summary>'
+            f'<div class="tablewrap"><table><thead><tr><th class="num">序号</th>'
+            f'<th class="num">所属段落</th><th class="num">分数</th><th>档位</th>'
+            f'<th>句子摘要</th></tr></thead><tbody>{"".join(rows)}</tbody></table></div>'
+            f'{more}</details>')
+
+    source_txt = (f"口径来源：<b>{_esc(source)}</b>。" if source
+                  else "口径来源：站点映射规则（未标注）。")
+    lead = ("把同一篇正文按商业网站（PaperPass）的句级 0–100 分口径重新着色，"
+            "用于解释「本机分数」与「站点分数」的差异；分数越高越像 AI。")
+    human_txt = _site_human_reference(meta)
+
+    return (f'<section class="card sitepanel" id="sec-site">'
+            f'<div class="sec-head"><span class="sec-no">01</span>'
+            f'<h2>站点对照 · 全文按句着色</h2></div>'
+            f'<p class="sec-lead">{lead}</p>'
+            f'{head_html}{chips_html}{body_html}'
+            f'<p class="site-note">{source_txt}{_SITE_WARNING}</p>'
+            f'{human_txt}'
+            f'{detail_html}</section>')
+
+
 def _calibration_block(analysis: Analysis) -> str:
     rc = analysis.recipe
     if rc.calibrated:
@@ -711,6 +1029,7 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
     conservative = analysis.ai_rate_chars
     rk = analysis.grade_suspect or risk_key(rate, 0.60)
     title, desc = RISK.get(rk, RISK["low"])
+    title_short = title.replace("结论：", "")
     ci = analysis.ai_rate_suspect_ci
     ci_txt = (f"{_rate_txt(ci[0])} – {_rate_txt(ci[1])}" if ci else "样本段数太少，无法给出区间")
     generated_at = generated_at or time.strftime("%Y-%m-%d %H:%M:%S")
@@ -762,6 +1081,53 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
         f"<button class='chipbtn{' on' if key == 'all' else ''}' type='button' "
         f"data-filter='{key}'>{label}</button>" for key, label in filter_defs)
 
+    site_panel = _site_panel(analysis)
+    # 首屏口径：站点数据可用时改用「疑似文字占比 · 站点对照」（用户核心诉求是对齐商业网站），
+    # 保守口径降级为大字下的一行小字；站点数据缺失时保持原来的保守口径首屏。
+    site_ratio = _site_ratio(analysis)
+    site_headline = _site_headline(analysis)
+    site_mode = site_ratio is not None
+    if site_mode:
+        disp_rate = site_ratio
+        disp_rk, disp_pill, disp_desc = _site_verdict(site_ratio)
+        disp_label = "疑似文字占比 · 站点对照"
+        headline_txt = f"{site_headline:.1f}" if site_headline is not None else "—"
+        headline_part = (f"，综合分 <b>{headline_txt}</b> / 100"
+                         if site_headline is not None else "")
+        subtitle = (f'站点对照口径（PaperPass）：疑似文字占比 <b>{_rate_txt(disp_rate)}</b>'
+                    f'{headline_part}；本机保守口径 AI 生成占比 <b>{_rate_txt(conservative)}</b>。'
+                    f'这套口径与商业网站对齐、判定偏激进，用来解释「为什么站点给得高」，'
+                    f'不是 AI 使用证据；请按下方「站点对照」的正文着色与「逐段明细」核对证据。')
+        sticky_mode = f"站点对照 · 保守口径 {_rate_txt(conservative)}"
+        hero_alt = (f'<p class="hero-alt">保守口径（本机标定）AI 生成占比 '
+                    f'<b>{_rate_txt(conservative)}</b></p>')
+        evidence_lead = ('<p class="hero-note">以下统计、区间与逐段表仍按本机疑似轨'
+                         '（保守证据链）给出，用于定位段落证据。</p>')
+        low_signal_html = ""
+        site_def = ('<li><b>站点对照（首屏大字）</b>：按商业网站（PaperPass）的句级 0–100 分口径'
+                    '映射后的疑似文字占比，档位线由锚点文档公布的占比反解；这是激进口径，'
+                    '只用于解释站点分数，不作为 AI 使用证据。</li>')
+        # 长口径标签放在圆环外：打印时量表会缩小，圆环内放不下两行标签。
+        site_scope = f'<div class="gauge-cap gauge-scope">{disp_label}</div>'
+    else:
+        disp_rate = rate
+        disp_rk, disp_pill, disp_desc = rk, title_short, desc
+        disp_label = "疑似 AI 占比"
+        subtitle = (f'{_esc(title_short)}。疑似 AI 占比 <b>{_rate_txt(rate)}</b>'
+                    f'（95% 置信区间 {ci_txt}），{ai_paras}/{units} 段被判为疑似 AI 段落；'
+                    f'建议按「逐段明细」定位可疑段落并用你自己的表达改写。')
+        sticky_mode = f"模式 {_esc(analysis.mode)} · 疑似线 {analysis.suspect_threshold*100:.0f}%"
+        hero_alt = ""
+        evidence_lead = ""
+        low_signal_html = low_signal
+        site_def = ""
+        site_scope = ""
+    # 站点对照区块插到「护栏」之后时，后面四个区块的编号要顺延，避免出现两个 01。
+    no_dist = "02" if site_panel else "01"
+    no_sent = "03" if site_panel else "02"
+    no_para = "04" if site_panel else "03"
+    no_engine = "05" if site_panel else "04"
+
     return f"""<!DOCTYPE html>
 <html lang="zh-CN" data-theme="light">
 <head>
@@ -776,9 +1142,9 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
 <div class="stickybar noprint" id="stickybar">
   <div class="inner">
     <span>{_esc(name)}</span>
-    <b class="num">{_rate_txt(rate)}</b>
-    <span class="risk pill {rk}">{_esc(title.replace('结论：', ''))}</span>
-    <span>模式 {_esc(analysis.mode)} · 疑似线 {analysis.suspect_threshold*100:.0f}%</span>
+    <b class="num">{_rate_txt(disp_rate)}</b>
+    <span class="risk pill {disp_rk}">{_esc(disp_pill)}</span>
+    <span>{sticky_mode}</span>
   </div>
 </div>
 
@@ -795,9 +1161,7 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
   <div class="titles">
     <div class="eyebrow">Detection report</div>
     <h1>AI 生成率检测报告</h1>
-    <p class="subtitle">{_esc(title.replace('结论：', ''))}。疑似 AI 占比 <b>{_rate_txt(rate)}</b>
-      （95% 置信区间 {ci_txt}），{ai_paras}/{units} 段被判为疑似 AI 段落；建议按「逐段明细」
-      定位可疑段落并用你自己的表达改写。</p>
+    <p class="subtitle">{subtitle}</p>
   </div>
   <dl class="metarow">
     <div><dt>文档</dt><dd>{_esc(name)}</dd></div>
@@ -811,11 +1175,14 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
 <section class="card">
   <div class="verdict">
     <div class="gauge-wrap">
-      {_gauge(rate, 0.60, rk)}
-      <div class="pill {rk}">{_esc(title.replace('结论：', ''))}</div>
+      {_gauge(disp_rate, 0.60, disp_rk, disp_label, show_cap=not site_mode)}
+      {site_scope}
+      <div class="pill {disp_rk}">{_esc(disp_pill)}</div>
+      {hero_alt}
     </div>
     <div class="verdict-body">
-      <p>{_esc(desc)}</p>
+      <p>{_esc(disp_desc)}</p>
+      {evidence_lead}
       <div class="statgrid">
         <div class="stat"><b>{_rate_txt(analysis.ai_rate_suspect_paras)}</b><span>疑似段落占比（{ai_paras}/{units} 段）</span></div>
         <div class="stat"><b>{high_n}<small> 段</small></b><span>极高疑似段</span></div>
@@ -826,7 +1193,7 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
         <div class="stat"><b>{spread:.2f}</b><span>段落分歧（标准差·{spread_txt}）</span></div>
         <div class="stat"><b>{st.get('excluded_chars', 0)}<small> 字</small></b><span>已剔除（参考文献等）</span></div>
       </div>
-      {low_signal}
+      {low_signal_html}
       {_range_bar(rate, ci, 0.60)}
       {_grade_bar(analysis)}
       {_top_paragraphs(analysis)}
@@ -847,8 +1214,10 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
   </ul>
 </section>
 
+{site_panel}
+
 <section class="card" id="sec-dist">
-  <div class="sec-head"><span class="sec-no">01</span><h2>段落分布</h2></div>
+  <div class="sec-head"><span class="sec-no">{no_dist}</span><h2>段落分布</h2></div>
   <p class="sec-lead">每根柱子是一个段落（或合并段）的<b>疑似度</b>（v2 判别器给出的 P(AI)）；
     虚线是本次模式的疑似线，柱色表示疑似档。鼠标悬停可看段号、精确概率与字数。</p>
   <div class="chart-wrap">{_distribution_chart(analysis)}</div>
@@ -862,13 +1231,13 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
 </section>
 
 <section class="card" id="sec-sent">
-  <div class="sec-head"><span class="sec-no">02</span><h2>可疑句（句级细化）</h2></div>
+  <div class="sec-head"><span class="sec-no">{no_sent}</span><h2>可疑句（句级细化）</h2></div>
   <p class="sec-lead">只对已判为 AI 的段落做句级打分，最多列 20 条；这些是<b>最值得优先改写</b>的位置。</p>
   {_sentence_rows(analysis)}
 </section>
 
 <section class="card" id="sec-para">
-  <div class="sec-head"><span class="sec-no">03</span><h2>逐段明细</h2></div>
+  <div class="sec-head"><span class="sec-no">{no_para}</span><h2>逐段明细</h2></div>
   <p class="sec-lead">按段落给出分数、等级与触发特征。可按等级筛选；点「展开全文 / 判定依据」看原文与解释。</p>
   <div class="filters noprint">{filters}<span class="chipbtn" id="filter-count" style="cursor:default">共 {len(analysis.paragraphs)} 段</span></div>
   <div class="tablewrap">
@@ -883,7 +1252,7 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
 </section>
 
 <section class="card" id="sec-engine">
-  <div class="sec-head"><span class="sec-no">04</span><h2>引擎与标定</h2></div>
+  <div class="sec-head"><span class="sec-no">{no_engine}</span><h2>引擎与标定</h2></div>
   <p class="sec-lead">四个独立信号融合：两份中文判别器分别看「像不像旧版/新版模型写的」，
     困惑度看「有多可预测」，文体统计看「结构是否过分工整」。</p>
   {_calibration_block(analysis)}
@@ -897,7 +1266,8 @@ def render(analysis: Analysis, generated_at: str | None = None) -> str:
     <div>
       <h3>口径定义</h3>
       <ul class="plain">
-        <li><b>疑似 AI 占比（首屏大字）</b>：把每个段落交给 v2 判别器（跨多个生成器家族微调），
+        {site_def}
+        <li><b>疑似 AI 占比（本机疑似轨）</b>：把每个段落交给 v2 判别器（跨多个生成器家族微调），
           疑似度 ≥ 疑似线（{analysis.suspect_threshold*100:.0f}%）的段落字数 ÷ 正文字数。
           这一口径与商业 AIGC 检测网站的思路一致，便于横向对照。</li>
         <li><b>保守口径 AI 生成占比</b>：{_rate_txt(conservative)}。用 HC3 标定的严格融合分（判定阈值

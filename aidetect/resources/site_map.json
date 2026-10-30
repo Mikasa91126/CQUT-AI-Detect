@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "method": "anchor-ratio fitting：按站点公布的档位字数占比反解 zhv3 档位线，再解顶端锚点使综合分对齐站点；窗口 240 字，与 aidetect/site.py 同一切法",
+  "engine": "zhv3",
+  "bands": {
+    "high": 70.0,
+    "mid_high": 60.0,
+    "mid": 50.0
+  },
+  "anchors": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.039158,
+      50.0
+    ],
+    [
+      0.050717,
+      60.0
+    ],
+    [
+      0.179092,
+      70.0
+    ],
+    [
+      1.0,
+      74.31
+    ]
+  ],
+  "band_lines_p": {
+    "high": 0.179092,
+    "mid_high": 0.050717,
+    "mid": 0.039158
+  },
+  "meta": {
+    "site": "PaperPass（免费版 AIGC 检测报告）",
+    "anchor_doc": "生物医学工程专业导论论文_刘颐刚.docx",
+    "site_score": 54.98,
+    "site_suspected_ratio": 66.49,
+    "site_high_ratio": 48.4,
+    "site_mid_ratio": 13.72,
+    "site_low_ratio": 4.37,
+    "source": "PaperPass 免费版 AIGC 检测报告（锚点文档：生物医学工程专业导论论文_刘颐刚.docx）",
+    "generated_at": "2026-10-30T20:35:22",
+    "anchor_windows": 28,
+    "anchor_chars": 7499,
+    "anchor_after_map": {
+      "high": 0.5006,
+      "mid_high": 0.0941,
+      "mid": 0.0849,
+      "none": 0.3203,
+      "suspected": 0.6796,
+      "headline": 54.98
+    },
+    "human_reference": {
+      "hc3_human": {
+        "docs": 30,
+        "chars": 14381,
+        "corpus_suspected_share": 0.6359,
+        "corpus_high_share": 0.1834,
+        "doc_mean_suspected": 0.6151
+      },
+      "thucnews_human": {
+        "docs": 30,
+        "chars": 33633,
+        "corpus_suspected_share": 0.6926,
+        "corpus_high_share": 0.4475,
+        "doc_mean_suspected": 0.7422
+      }
+    },
+    "caveat": "站点对照档是与商业网站对齐的激进口径：档位线由「站点在锚点文档上公布的占比」反解而来，对人类正式文本（新闻等）的误报显著高于保守口径；不要用它作为学术不端证据。"
+  }
+}

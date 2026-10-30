@@ -67,6 +67,11 @@ def _print_summary(analysis, html_path: Path | None, json_path: Path | None) -> 
           f"   模式 {analysis.mode} / 疑似线 {analysis.suspect_threshold*100:.0f}%")
     print(f"保守口径 AI 生成占比：{_rate_txt(analysis.ai_rate_chars)}"
           f"（标定阈值 {analysis.threshold*100:.2f}%，对较新模型的改写输出容易漏检）")
+    if analysis.site is not None:
+        s = analysis.site
+        print(f"  站点对照    疑似文字占比 {s.suspected_ratio*100:.1f}%"
+              f"（高 {s.ratios['high']*100:.1f}% / 中 {s.ratios['mid_high']*100:.1f}%"
+              f" / 低 {s.ratios['mid']*100:.1f}%）")
     if analysis.warnings:
         print("\n护栏提示：")
         for w in analysis.warnings:
